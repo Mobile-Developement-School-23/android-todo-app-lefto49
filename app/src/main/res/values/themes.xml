@@ -1,0 +1,39 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.TodoApplication" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#F5F6F2</item>
+        <item name="colorOnPrimary">#000000</item>
+
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">#FFFFFF</item>
+        <item name="colorOnSecondary">#666666</item>
+
+        <item name="colorTertiary">#FFFFFF</item>
+        <item name="colorOnTertiary">#B3B3B3</item>
+
+        <item name="colorOutline">#cccccc</item>
+        <item name="colorAccent">#007AFF</item>
+    </style>
+
+    <style name="important_text">
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:lineSpacingExtra">4sp</item>
+        <item name="android:textColor">#FF3B30</item>
+    </style>
+
+    <style name="delete_color">
+        <item name="android:tint">#FF3B30</item>
+    </style>
+
+    <style name="blue_button">
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingExtra">10sp</item>
+        <item name="android:textColor">#007AFF</item>
+    </style>
+</resources>
