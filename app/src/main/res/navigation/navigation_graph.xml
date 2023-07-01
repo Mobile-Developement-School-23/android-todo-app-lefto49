@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/taskListFragment"
-        android:name="com.todoapplication.view.TaskListFragment"
+        android:name="com.todoapplication.view.fragments.TaskListFragment"
         android:label="TaskListFragment" >
         <action
             android:id="@+id/action_taskListFragment_to_taskInfoFragment"
@@ -17,10 +17,10 @@
     </fragment>
     <fragment
         android:id="@+id/addTaskFragment"
-        android:name="com.todoapplication.view.AddTaskFragment"
+        android:name="com.todoapplication.view.fragments.AddTaskFragment"
         android:label="AddTaskFragment" />
     <fragment
         android:id="@+id/taskInfoFragment"
-        android:name="com.todoapplication.view.TaskInfoFragment"
+        android:name="com.todoapplication.view.fragments.TaskInfoFragment"
         android:label="TaskInfoFragment" />
 </navigation>

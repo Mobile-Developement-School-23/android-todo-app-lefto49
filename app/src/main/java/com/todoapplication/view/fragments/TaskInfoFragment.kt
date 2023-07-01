@@ -1,4 +1,4 @@
-package com.todoapplication.view
+package com.todoapplication.view.fragments
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -12,9 +12,16 @@ import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
-import com.todoapplication.data.Importance
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.todoapplication.data.entity.Importance
 import com.todoapplication.R
 import com.todoapplication.TodoApp
+import com.todoapplication.data.entity.TodoItem
+import com.todoapplication.view.activity.MainActivity
+import com.todoapplication.view.model.TaskViewModel
+import kotlinx.coroutines.launch
 import java.util.*
 
 /**
@@ -36,6 +43,7 @@ class TaskInfoFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.add_task_fragment, container, false)
         val taskId = requireArguments().getString("taskId")!!
+        val viewModel = ViewModelProvider(activity as MainActivity)[TaskViewModel::class.java]
 
         saveButton = view.findViewById(R.id.tv_save)
         cancelButton = view.findViewById(R.id.iv_cancel)
@@ -45,17 +53,24 @@ class TaskInfoFragment : Fragment() {
         isDeadline = view.findViewById(R.id.sw_deadline)
         deadline = view.findViewById(R.id.tv_date)
 
-        val task = (activity as MainActivity).getTaskById(taskId)
+        var task = TodoItem("", "", Importance.basic, Date(), false, Date(), Date())
+        lifecycleScope.launch {
+            viewModel.getTaskById(taskId).collect {
+                task = it
+                taskText.setText(it.task)
 
-        if (task.deadline != null) {
-            isDeadline.isChecked = true
-            deadline.visibility = View.VISIBLE
-            deadline.text = TodoApp.formatter.format(task.deadline)
-        } else {
-            isDeadline.isChecked = false
-            deadline.visibility = View.INVISIBLE
+                if (task.deadline != null) {
+                    isDeadline.isChecked = true
+                    deadline.visibility = View.VISIBLE
+                    deadline.text = TodoApp.formatter.format(task.deadline)
+                } else {
+                    isDeadline.isChecked = false
+                    deadline.visibility = View.INVISIBLE
+                }
+
+                importance.setSelection(task.importance.value)
+            }
         }
-        taskText.setText(task.task)
 
         isDeadline.setOnClickListener {
             if (isDeadline.isChecked) {
@@ -70,6 +85,9 @@ class TaskInfoFragment : Fragment() {
                         calendar.get(Calendar.YEAR)
                     )
                     dialog.show()
+                    dialog.setOnCancelListener {
+                        isDeadline.isChecked = false
+                    }
                 }
                 deadline.visibility = View.VISIBLE
                 deadline.isClickable = true
@@ -83,7 +101,7 @@ class TaskInfoFragment : Fragment() {
             val dialog = DatePickerDialog(
                 activity as MainActivity,
                 { _, year, month, day ->
-                    deadline.text = String.format("%02d.%02d.%d", day,  + 1, year)
+                    deadline.text = String.format("%02d.%02d.%d", day, +1, year)
                 },
                 calendar.get(Calendar.DAY_OF_MONTH),
                 calendar.get(Calendar.MONTH) + 1,
@@ -93,21 +111,30 @@ class TaskInfoFragment : Fragment() {
         }
 
         saveButton.setOnClickListener {
-            (activity as MainActivity).updateTask(
-                taskId,
-                taskText.text.toString(),
-                isDeadline.isChecked,
-                deadline.text.toString(),
-                listOf(Importance.MIDDLE, Importance.LOW, Importance.HIGH)[importance.selectedItemPosition]
-            )
+            task.task = taskText.text.toString()
+            if (isDeadline.isChecked) {
+                task.deadline = TodoApp.formatter.parse(deadline.text.toString())
+            } else {
+                task.deadline = null
+            }
+
+            task.importance = listOf(
+                Importance.basic,
+                Importance.low,
+                Importance.important
+            )[importance.selectedItemPosition]
+            task.editedAt = Date()
+            viewModel.updateTask(task)
+            findNavController().navigateUp()
         }
 
         deleteButton.setOnClickListener {
-            (activity as MainActivity).deleteTask(taskId)
+            viewModel.deleteTask(task)
+            findNavController().navigateUp()
         }
 
         cancelButton.setOnClickListener {
-            (activity as MainActivity).popStack()
+            findNavController().navigateUp()
         }
 
         val spinnerAdapter = ArrayAdapter(

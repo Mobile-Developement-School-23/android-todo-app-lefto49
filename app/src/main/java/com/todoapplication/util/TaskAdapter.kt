@@ -12,12 +12,16 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.todoapplication.R
 import com.todoapplication.TodoApp
-import com.todoapplication.data.Importance
-import com.todoapplication.data.TodoItem
-import com.todoapplication.view.MainActivity
+import com.todoapplication.data.entity.Importance
+import com.todoapplication.data.entity.TodoItem
+import com.todoapplication.view.activity.MainActivity
 
-class TaskAdapter(var tasks: List<TodoItem>, var activity: Context) :
+class TaskAdapter(var tasks: List<TodoItem>, var activity: Context, var listener: OnTaskListener) :
     RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
+    interface OnTaskListener {
+        fun onClick(taskId: String)
+    }
+
     inner class TaskViewHolder(private val itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val isDoneCheckbox = itemView.findViewById<CheckBox>(R.id.cb_task)
         private val deadlineText = itemView.findViewById<TextView>(R.id.tv_deadline)
@@ -27,27 +31,32 @@ class TaskAdapter(var tasks: List<TodoItem>, var activity: Context) :
         fun onBind(task: TodoItem) {
             taskItem = task
             isDoneCheckbox.isChecked = false
-            taskText.paintFlags = (taskText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG) xor Paint.STRIKE_THRU_TEXT_FLAG
+            taskText.paintFlags =
+                (taskText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG) xor Paint.STRIKE_THRU_TEXT_FLAG
 
-            if (taskItem.importance == Importance.LOW) {
-                taskText.text = String.format("↓ %s", taskItem.task)
-            } else if (taskItem.importance == Importance.HIGH) {
-                taskText.text = String.format("!! %s", taskItem.task)
-            } else {
-                taskText.text = taskItem.task
+            when (taskItem.importance) {
+                Importance.low -> taskText.text = String.format("↓ %s", taskItem.task)
+                Importance.important -> taskText.text = String.format("!! %s", taskItem.task)
+                else -> taskText.text = taskItem.task
             }
 
             if (task.deadline != null) {
                 deadlineText.text = TodoApp.formatter.format(task.deadline)
-                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(activity,
-                    R.color.red
-                ))
+                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        activity,
+                        R.color.red
+                    )
+                )
             }
 
             if (task.isDone) {
-                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(activity,
-                    R.color.green
-                ))
+                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        activity,
+                        R.color.green
+                    )
+                )
                 isDoneCheckbox.isChecked = true
                 taskText.paintFlags = taskText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             }
@@ -55,20 +64,26 @@ class TaskAdapter(var tasks: List<TodoItem>, var activity: Context) :
             isDoneCheckbox.setOnClickListener {
                 (activity as MainActivity).changeTaskDone(taskItem, isDoneCheckbox.isChecked)
                 if (isDoneCheckbox.isChecked) {
-                    isDoneCheckbox.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(activity,
-                        R.color.green
-                    ))
+                    isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            activity,
+                            R.color.green
+                        )
+                    )
                     taskText.paintFlags = taskText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 } else {
                     taskText.paintFlags = taskText.paintFlags xor Paint.STRIKE_THRU_TEXT_FLAG
-                    isDoneCheckbox.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(activity,
-                        R.color.red
-                    ))
+                    isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            activity,
+                            R.color.red
+                        )
+                    )
                 }
             }
 
             itemView.setOnClickListener {
-                (activity as MainActivity).showTaskInfo(taskItem.id)
+                listener.onClick(task.id)
             }
         }
     }
@@ -86,11 +101,8 @@ class TaskAdapter(var tasks: List<TodoItem>, var activity: Context) :
 
     override fun getItemCount(): Int = tasks.size
 
-    public fun getData(): List<TodoItem> {
-        return tasks
-    }
-
-    public fun updateData(newTasks: List<TodoItem>) {
+    fun updateData(newTasks: List<TodoItem>) {
         tasks = newTasks
+        notifyDataSetChanged()
     }
 }

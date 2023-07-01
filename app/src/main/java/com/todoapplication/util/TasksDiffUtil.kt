@@ -1,7 +1,7 @@
 package com.todoapplication.util
 
 import androidx.recyclerview.widget.DiffUtil
-import com.todoapplication.data.TodoItem
+import com.todoapplication.data.entity.TodoItem
 
 class TasksDiffUtil(private val oldList: List<TodoItem>, private val newList: List<TodoItem>) :
     DiffUtil.Callback() {
