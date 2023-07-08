@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.todoapplication.TodoApp
 import com.todoapplication.data.network.api.ResponseStatus
 import com.todoapplication.data.repository.TodoItemsRepository
 import javax.inject.Inject

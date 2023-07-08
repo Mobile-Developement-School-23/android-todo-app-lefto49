@@ -6,12 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.todoapplication.data.entity.TodoItem
 import com.todoapplication.data.network.api.ResponseStatus
 import com.todoapplication.data.repository.TodoItemsRepository
-import com.todoapplication.di.annotation.ApplicationScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * ViewModel for storing the data and connecting the user's actions and the repository.

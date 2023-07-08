@@ -4,9 +4,6 @@ import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.todoapplication.data.repository.TodoItemsRepository
-import com.todoapplication.di.annotation.ApplicationScope
-import javax.inject.Inject
-import javax.inject.Provider
 
 /**
  * Factory for creating the viewmodels.

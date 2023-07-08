@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import com.todoapplication.TodoApp
 import com.todoapplication.data.network.api.ResponseStatus
 import com.todoapplication.data.repository.TodoItemsRepository
 import kotlinx.coroutines.Dispatchers

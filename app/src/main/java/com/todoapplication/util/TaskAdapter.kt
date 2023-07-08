@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.todoapplication.R
-import com.todoapplication.TodoApp
 import com.todoapplication.data.entity.Importance
 import com.todoapplication.data.entity.TodoItem
 import com.todoapplication.view.activity.MainActivity

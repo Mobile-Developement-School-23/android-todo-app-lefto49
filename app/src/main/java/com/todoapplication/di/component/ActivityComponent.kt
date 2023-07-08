@@ -1,6 +1,5 @@
 package com.todoapplication.di.component
 
-import com.todoapplication.di.annotation.ActivityScope
 import com.todoapplication.view.activity.MainActivity
 import com.todoapplication.view.fragments.AddTaskFragment
 import com.todoapplication.view.fragments.TaskInfoFragment
