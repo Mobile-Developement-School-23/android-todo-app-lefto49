@@ -3,15 +3,24 @@ package com.todoapplication.util.background
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import com.todoapplication.TodoApp
 import com.todoapplication.data.network.api.ResponseStatus
+import com.todoapplication.data.repository.TodoItemsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class NetworkChangeReceiver : BroadcastReceiver() {
+/**
+ * Is used for observing the user's connectivity status.
+ */
+class NetworkChangeReceiver @Inject constructor(
+    private val repo: TodoItemsRepository,
+    private val preferences: SharedPreferences
+) : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val manager =
             context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
@@ -23,9 +32,9 @@ class NetworkChangeReceiver : BroadcastReceiver() {
             )
         ) {
             GlobalScope.launch(Dispatchers.IO) {
-                val result = TodoApp.repo.syncData()
+                val result = repo.syncData()
                 if (result == ResponseStatus.OK) {
-                    TodoApp.preferences.edit().putBoolean("local updates", false).apply()
+                    preferences.edit().putBoolean("local updates", false).apply()
                 }
             }
         }

@@ -14,6 +14,9 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
+/**
+ * Describes the possible requests to the API.
+ */
 interface TodoAPI {
     @GET("list")
     suspend fun getTasks(): Response<TaskListResponse>

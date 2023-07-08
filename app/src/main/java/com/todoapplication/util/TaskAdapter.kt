@@ -15,8 +15,17 @@ import com.todoapplication.TodoApp
 import com.todoapplication.data.entity.Importance
 import com.todoapplication.data.entity.TodoItem
 import com.todoapplication.view.activity.MainActivity
+import java.text.SimpleDateFormat
 
-class TaskAdapter(var tasks: List<TodoItem>, var activity: Context, var listener: OnTaskListener) :
+/**
+ * Adapter for displaying each task in a RecyclerView.
+ */
+class TaskAdapter(
+    var tasks: List<TodoItem>,
+    var activity: Context,
+    var listener: OnTaskListener,
+    val formatter: SimpleDateFormat
+) :
     RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
     interface OnTaskListener {
         fun onClick(taskId: String)
@@ -34,56 +43,54 @@ class TaskAdapter(var tasks: List<TodoItem>, var activity: Context, var listener
             taskText.paintFlags =
                 (taskText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG) xor Paint.STRIKE_THRU_TEXT_FLAG
 
+            setTaskData()
+
+            isDoneCheckbox.setOnClickListener {
+                isDoneClickListener()
+            }
+
+            itemView.setOnClickListener {
+                listener.onClick(task.id)
+            }
+        }
+
+        private fun setTaskData() {
             when (taskItem.importance) {
                 Importance.low -> taskText.text = String.format("↓ %s", taskItem.task)
                 Importance.important -> taskText.text = String.format("!! %s", taskItem.task)
                 else -> taskText.text = taskItem.task
             }
 
-            if (task.deadline != null) {
-                deadlineText.text = TodoApp.formatter.format(task.deadline)
-                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(
-                        activity,
-                        R.color.red
-                    )
-                )
+            if (taskItem.deadline != null) {
+                deadlineText.text = formatter.format(taskItem.deadline)
+                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.red))
             }
 
-            if (task.isDone) {
+            if (taskItem.isDone) {
+                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.green))
+                isDoneCheckbox.isChecked = true
+                taskText.paintFlags = taskText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            }
+        }
+
+        private fun isDoneClickListener() {
+            (activity as MainActivity).changeTaskDone(taskItem, isDoneCheckbox.isChecked)
+            if (isDoneCheckbox.isChecked) {
                 isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
                     ContextCompat.getColor(
                         activity,
                         R.color.green
                     )
                 )
-                isDoneCheckbox.isChecked = true
                 taskText.paintFlags = taskText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-            }
-
-            isDoneCheckbox.setOnClickListener {
-                (activity as MainActivity).changeTaskDone(taskItem, isDoneCheckbox.isChecked)
-                if (isDoneCheckbox.isChecked) {
-                    isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                            activity,
-                            R.color.green
-                        )
+            } else {
+                taskText.paintFlags = taskText.paintFlags xor Paint.STRIKE_THRU_TEXT_FLAG
+                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        activity,
+                        R.color.red
                     )
-                    taskText.paintFlags = taskText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                } else {
-                    taskText.paintFlags = taskText.paintFlags xor Paint.STRIKE_THRU_TEXT_FLAG
-                    isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                            activity,
-                            R.color.red
-                        )
-                    )
-                }
-            }
-
-            itemView.setOnClickListener {
-                listener.onClick(task.id)
+                )
             }
         }
     }

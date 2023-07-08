@@ -1,21 +1,28 @@
 package com.todoapplication.view.model
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.todoapplication.TodoApp
 import com.todoapplication.data.entity.TodoItem
 import com.todoapplication.data.network.api.ResponseStatus
+import com.todoapplication.data.repository.TodoItemsRepository
+import com.todoapplication.di.annotation.ApplicationScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
-class TaskViewModel : ViewModel() {
+/**
+ * ViewModel for storing the data and connecting the user's actions and the repository.
+ */
+class TaskViewModel(
+    private val repo: TodoItemsRepository,
+    private val preferences: SharedPreferences
+) : ViewModel() {
     private lateinit var allTasks: Flow<List<TodoItem>>
     private lateinit var tasksList: List<TodoItem>
     private var snackbarText = MutableStateFlow<String?>(null)
-    private val repo = TodoApp.repo
 
     init {
         uploadData()
@@ -51,7 +58,7 @@ class TaskViewModel : ViewModel() {
                 updateTask(task)
             } else {
                 snackbarText.emit("Изменения сохранены локально. Проверьте соединение и попробуйте позднее")
-                TodoApp.preferences.edit().putBoolean("local updates", true).apply()
+                preferences.edit().putBoolean("local updates", true).apply()
             }
         }
     }
@@ -68,7 +75,7 @@ class TaskViewModel : ViewModel() {
                 deleteTask(task)
             } else {
                 snackbarText.emit("Изменения сохранены локально. Проверьте соединение и попробуйте позднее")
-                TodoApp.preferences.edit().putBoolean("local updates", true).apply()
+                preferences.edit().putBoolean("local updates", true).apply()
             }
         }
     }
@@ -85,7 +92,7 @@ class TaskViewModel : ViewModel() {
                 addTask(task)
             } else {
                 snackbarText.emit("Изменения сохранены локально. Проверьте соединение и попробуйте позднее")
-                TodoApp.preferences.edit().putBoolean("local updates", true).apply()
+                preferences.edit().putBoolean("local updates", true).apply()
             }
         }
     }
@@ -95,7 +102,7 @@ class TaskViewModel : ViewModel() {
     fun getTaskById(taskId: String): Flow<TodoItem> = repo.getTaskById(taskId)
 
     override fun onCleared() {
-        TodoApp.preferences.edit().putInt("revision", repo.getRevision()).apply()
+        preferences.edit().putInt("revision", repo.getRevision()).apply()
         super.onCleared()
     }
 }

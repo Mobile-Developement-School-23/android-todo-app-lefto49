@@ -2,8 +2,12 @@ package com.todoapplication.data.network.interaction
 
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
 
-class AuthInterceptor : Interceptor {
+/**
+ * Adds an authorization token to a request.
+ */
+class AuthInterceptor @Inject constructor(): Interceptor {
     private val token = "psyches"
 
     override fun intercept(chain: Interceptor.Chain): Response {

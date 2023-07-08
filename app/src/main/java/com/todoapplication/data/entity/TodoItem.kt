@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName
 import com.todoapplication.data.room.DateConverter
 import java.util.Date
 
+/**
+ * Class for storing the information about a TodoItem
+ */
 @Entity(tableName = "todoitems")
 data class TodoItem(
     @PrimaryKey

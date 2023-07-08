@@ -1,17 +1,26 @@
 package com.todoapplication.util.background
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.todoapplication.TodoApp
 import com.todoapplication.data.network.api.ResponseStatus
+import com.todoapplication.data.repository.TodoItemsRepository
+import javax.inject.Inject
 
-
-class UploadManager(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+/**
+ * Is used for periodic syncing of the local data with the remote data source.
+ */
+class UploadManager @Inject constructor(
+    context: Context,
+    params: WorkerParameters,
+    private val repo: TodoItemsRepository, private val preferences: SharedPreferences
+) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
-        val result = TodoApp.repo.syncData()
+        val result = repo.syncData()
         if (result == ResponseStatus.OK) {
-            TodoApp.preferences.edit().putBoolean("local updates", false).apply()
+            preferences.edit().putBoolean("local updates", false).apply()
         }
 
         return when (result) {

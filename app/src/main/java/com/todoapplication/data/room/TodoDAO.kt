@@ -4,6 +4,10 @@ import androidx.room.*
 import com.todoapplication.data.entity.TodoItem
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Contains the requests to the database.
+ */
+
 @Dao
 interface TodoDAO {
     @Query("SELECT * FROM todoitems")

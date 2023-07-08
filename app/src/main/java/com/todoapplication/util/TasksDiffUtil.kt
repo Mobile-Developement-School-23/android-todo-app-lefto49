@@ -3,6 +3,9 @@ package com.todoapplication.util
 import androidx.recyclerview.widget.DiffUtil
 import com.todoapplication.data.entity.TodoItem
 
+/**
+ * Is used for effectively updating the data of a adapter.
+ */
 class TasksDiffUtil(private val oldList: List<TodoItem>, private val newList: List<TodoItem>) :
     DiffUtil.Callback() {
     override fun getOldListSize(): Int {

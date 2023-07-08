@@ -4,6 +4,9 @@ import android.util.Log
 import com.todoapplication.data.network.interaction.RemoteTodoItem
 import java.util.*
 
+/**
+ * Converters from remote TodoItem object to the local one and vice versa.
+ */
 class JsonConverters {
     companion object {
         fun fromRemote(remote: RemoteTodoItem): TodoItem {

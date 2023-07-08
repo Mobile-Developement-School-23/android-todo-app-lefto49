@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName
 import com.todoapplication.data.entity.Importance
 import java.util.*
 
+/**
+ * Is used for serializing and deserializing the TodoItem in and from the format that is used by a remote data source.
+ */
 data class RemoteTodoItem(
     @SerializedName("id")
     var id: String,

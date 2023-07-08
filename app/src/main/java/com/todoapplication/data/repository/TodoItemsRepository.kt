@@ -1,32 +1,32 @@
 package com.todoapplication.data.repository
 
+import android.content.SharedPreferences
 import android.util.Log
-import com.todoapplication.TodoApp
 import com.todoapplication.data.entity.JsonConverters
 import com.todoapplication.data.entity.TodoItem
 import com.todoapplication.data.network.api.ResponseStatus
 import com.todoapplication.data.network.api.TodoAPI
 import com.todoapplication.data.network.interaction.*
 import com.todoapplication.data.room.TodoDatabase
+import com.todoapplication.di.annotation.ApplicationScope
 import kotlinx.coroutines.flow.Flow
-import okhttp3.OkHttpClient
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
+import javax.inject.Inject
 
-class TodoItemsRepository {
-    private var db: TodoDatabase = TodoApp.getInstance().getDatabase()
-
-    private var revision = TodoApp.preferences.getInt("revision", 0)
-
-    private val httpClient = OkHttpClient.Builder().addInterceptor(AuthInterceptor()).build()
-    private val apiClient = Retrofit.Builder().baseUrl("https://beta.mrdekk.ru/todobackend/")
-        .client(httpClient)
-        .addConverterFactory(GsonConverterFactory.create()).build().create(TodoAPI::class.java)
+/**
+ * Is used for managing the data and updating it locally and remotely.
+ */
+@ApplicationScope
+class TodoItemsRepository @Inject constructor(
+    private val db: TodoDatabase,
+    private val retrofitClient: TodoAPI,
+    private val preferences: SharedPreferences
+) {
+    private var revision = preferences.getInt("revision", 0)
 
     suspend fun syncData(): ResponseStatus {
-        if (TodoApp.preferences.getBoolean("local updates", false)) {
+        if (preferences.getBoolean("local updates", false)) {
             return patchData()
         }
         return getData()
@@ -37,7 +37,7 @@ class TodoItemsRepository {
 
         try {
             response =
-                apiClient.getTasks()
+                retrofitClient.getTasks()
         } catch (e: Exception) {
             Log.println(Log.ERROR, "Exception", e.message.toString())
             return ResponseStatus.FAILED
@@ -62,7 +62,7 @@ class TodoItemsRepository {
 
         try {
             response =
-                apiClient.updateTasks(revision, request)
+                retrofitClient.updateTasks(revision, request)
         } catch (e: Exception) {
             Log.println(Log.ERROR, "Exception", e.message.toString())
             return ResponseStatus.FAILED
@@ -86,7 +86,7 @@ class TodoItemsRepository {
         var response: Response<SingleTaskResponse>? = null
         try {
             response =
-                apiClient.updateTask(task.id, request, revision)
+                retrofitClient.updateTask(task.id, request, revision)
         } catch (e: Exception) {
             Log.println(Log.ERROR, "Exception", e.message.toString())
         }
@@ -103,8 +103,8 @@ class TodoItemsRepository {
             return ResponseStatus.OK
         }
 
-        Log.println(Log.ERROR, "TAG", response.message())
-        if (response.code() == 400 && response.body()!!.status.equals("unsynchronized data")) {
+        Log.println(Log.ERROR, "REVISION", response.message())
+        if (response.code() == 400) {
             return ResponseStatus.UNSYNC
         }
 
@@ -116,7 +116,7 @@ class TodoItemsRepository {
 
         try {
             response =
-                apiClient.deleteTask(task.id, revision)
+                retrofitClient.deleteTask(task.id, revision)
         } catch (e: Exception) {
             Log.println(Log.ERROR, "Exception", e.message.toString())
         }
@@ -134,7 +134,7 @@ class TodoItemsRepository {
         }
 
         Log.println(Log.ERROR, "TAG", response.message())
-        if (response.code() == 400 && response.body()!!.status.equals("unsynchronized data")) {
+        if (response.code() == 400) {
             return ResponseStatus.UNSYNC
         }
         return ResponseStatus.ERROR
@@ -144,7 +144,7 @@ class TodoItemsRepository {
         var response: Response<SingleTaskResponse>? = null
         try {
             response =
-                apiClient.addTask(revision, AddTaskRequest(JsonConverters.toRemote(task)))
+                retrofitClient.addTask(revision, AddTaskRequest(JsonConverters.toRemote(task)))
         } catch (e: Exception) {
             Log.println(Log.ERROR, "Exception", e.message.toString())
         }
@@ -160,9 +160,10 @@ class TodoItemsRepository {
             revision = result.revision
             return ResponseStatus.OK
         }
+        Log.println(Log.ERROR, "REVISION", revision.toString())
 
         Log.println(Log.ERROR, "TAG", response.message())
-        if (response.code() == 400 && response.body()!!.status.equals("unsynchronized data")) {
+        if (response.code() == 400) {
             return ResponseStatus.UNSYNC
         }
         return ResponseStatus.ERROR
