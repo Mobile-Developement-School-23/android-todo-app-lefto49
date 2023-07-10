@@ -9,7 +9,8 @@ import dagger.Component
 
 @ApplicationScope
 @Component(
-    modules = [DatabaseModule::class, NetworkModule::class, PreferencesModule::class, FormatterModule::class]
+    modules = [DatabaseModule::class, NetworkModule::class, PreferencesModule::class,
+        FormatterModule::class, ViewModelBuilderModule::class]
 )
 interface AppComponent {
     @Component.Factory

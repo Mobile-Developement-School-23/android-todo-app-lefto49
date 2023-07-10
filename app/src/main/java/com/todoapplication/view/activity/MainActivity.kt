@@ -1,7 +1,6 @@
 package com.todoapplication.view.activity
 
 import android.content.IntentFilter
-import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.widget.LinearLayout
@@ -16,7 +15,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.todoapplication.R
 import com.todoapplication.TodoApp
 import com.todoapplication.data.entity.TodoItem
-import com.todoapplication.data.repository.TodoItemsRepository
 import com.todoapplication.util.background.NetworkChangeReceiver
 import com.todoapplication.view.model.TaskViewModel
 import com.todoapplication.view.model.ViewModelFactory
@@ -33,16 +31,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var receiver: NetworkChangeReceiver
 
     @Inject
-    lateinit var repo: TodoItemsRepository
-    @Inject
-    lateinit var preferences: SharedPreferences
-
-    private lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var viewModelFactory: ViewModelFactory
     private lateinit var viewModel: TaskViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (application as TodoApp).appComponent.activityComponent().inject(this)
-        viewModelFactory = ViewModelFactory(repo, preferences)
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this, viewModelFactory)[TaskViewModel::class.java]
         actionBar?.hide()

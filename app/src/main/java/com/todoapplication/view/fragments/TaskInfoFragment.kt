@@ -2,7 +2,6 @@ package com.todoapplication.view.fragments
 
 import android.app.DatePickerDialog
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -23,7 +22,6 @@ import com.todoapplication.data.entity.Importance
 import com.todoapplication.R
 import com.todoapplication.TodoApp
 import com.todoapplication.data.entity.TodoItem
-import com.todoapplication.data.repository.TodoItemsRepository
 import com.todoapplication.view.activity.MainActivity
 import com.todoapplication.view.model.TaskViewModel
 import com.todoapplication.view.model.ViewModelFactory
@@ -46,11 +44,7 @@ class TaskInfoFragment : Fragment() {
     private val calendar = Calendar.getInstance()
 
     @Inject
-    lateinit var repo: TodoItemsRepository
-    @Inject
-    lateinit var preferences: SharedPreferences
-
-    private lateinit var viewModelFactory: ViewModelProvider.Factory
+    lateinit var viewModelFactory: ViewModelFactory
     private lateinit var viewModel: TaskViewModel
 
     private lateinit var taskId: String
@@ -96,7 +90,6 @@ class TaskInfoFragment : Fragment() {
 
     private fun setView(view: View) {
         taskId = requireArguments().getString("taskId")!!
-        viewModelFactory = ViewModelFactory(repo, preferences)
         viewModel = ViewModelProvider(this, viewModelFactory)[TaskViewModel::class.java]
 
         saveButton = view.findViewById(R.id.tv_save)
