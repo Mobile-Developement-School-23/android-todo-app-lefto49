@@ -1,19 +1,19 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.TodoApplication" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="TodoApplication" parent="Theme.AppCompat.DayNight">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#0A84FF</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
 
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">#252528</item>
-        <item name="colorOnSecondary">#999999</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
 
-        <item name="colorTertiary">#3C3C3F</item>
-        <item name="colorOnTertiary">#B3B3B3</item>
+        <item name="colorTertiary">@color/colorTertiary</item>
+        <item name="colorOnTertiary">@color/colorOnTertiary</item>
 
-        <item name="android:textColorPrimaryDisableOnly">#D9D9D9</item>
-        <item name="colorOutline">#33FFFFFF</item>
-        <item name="colorAccent">#0A84FF</item>
+        <item name="colorOutline">@color/colorOutline</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorError">@color/red</item>
     </style>
 </resources>

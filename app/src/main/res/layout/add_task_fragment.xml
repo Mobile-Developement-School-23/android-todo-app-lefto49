@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimary">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/iv_cancel"
@@ -30,22 +29,22 @@
     <TextView
         android:id="@+id/tv_importance"
         style="@style/body"
+        android:textColor="?attr/colorOnPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/importance"
-        android:textColor="@color/colorOnPrimary"
         app:layout_constraintStart_toStartOf="@id/textInputLayout"
         app:layout_constraintTop_toBottomOf="@id/textInputLayout" />
 
     <TextView
         android:id="@+id/tv_do_until"
         style="@style/body"
+        android:textColor="?attr/colorOnPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="@string/do_until"
-        android:textColor="@color/colorOnPrimary"
         app:layout_constraintStart_toStartOf="@+id/sp_importance"
         app:layout_constraintTop_toBottomOf="@id/sp_importance" />
 
@@ -71,9 +70,9 @@
 
     <TextView
         android:id="@+id/tv_date"
+        android:textColor="?attr/colorOnPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorOnPrimary"
         app:layout_constraintStart_toStartOf="@id/tv_do_until"
         app:layout_constraintTop_toBottomOf="@id/tv_do_until" />
 
@@ -95,11 +94,11 @@
             style="@style/body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorSecondary"
+            android:textColor="?attr/colorOnSecondary"
+            android:background="?attr/colorSecondary"
             android:gravity="top"
             android:hint="@string/to_do"
             android:minHeight="150dp"
-            android:textColor="@color/colorOnSecondary"
             tools:layout_editor_absoluteX="-1dp"
             tools:layout_editor_absoluteY="73dp" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -114,10 +113,10 @@
 
     <ImageView
         android:id="@+id/iv_delete"
-        style="@style/delete_color"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        app:tint="?attr/colorError"
         app:layout_constraintStart_toStartOf="@id/tv_date"
         app:layout_constraintTop_toBottomOf="@id/tv_date"
         app:srcCompat="@android:drawable/ic_menu_delete" />

@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/colorPrimary">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/tv_title"
@@ -14,7 +13,7 @@
         android:layout_marginStart="70dp"
         android:layout_marginTop="130dp"
         android:text="@string/my_tasks"
-        android:textColor="@color/colorOnPrimary"
+        android:textColor="?attr/colorOnPrimary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/done"
-        android:textColor="@color/colorOnPrimary"
+        android:textColor="?attr/colorOnPrimary"
         app:layout_constraintStart_toStartOf="@id/tv_title"
         app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
@@ -35,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="3dp"
         android:text="@string/done"
-        android:textColor="@color/colorOnPrimary"
+        android:textColor="?attr/colorOnPrimary"
         app:layout_constraintStart_toEndOf="@id/tv_done"
         app:layout_constraintTop_toTopOf="@id/tv_done" />
 
@@ -46,7 +45,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_done">
+        app:layout_constraintTop_toBottomOf="@id/tv_done"
+        app:swipeRefreshLayoutProgressSpinnerBackgroundColor="?attr/colorAccent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_tasks"
@@ -55,8 +55,8 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="15dp"
             android:layout_marginEnd="10dp"
-            android:background="@color/colorSecondary"
-            android:textColor="@color/colorOnSecondary"
+            android:background="?attr/colorSecondary"
+            android:textColor="?attr/colorOnSecondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="40dp"
-        android:backgroundTint="#007AFF"
+        android:backgroundTint="?attr/colorAccent"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"

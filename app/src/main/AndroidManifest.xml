@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/icon"
         android:supportsRtl="true"
-        android:theme="@style/Theme.TodoApplication"
+        android:theme="@style/TodoApplication"
         tools:targetApi="31">
 
         <activity
