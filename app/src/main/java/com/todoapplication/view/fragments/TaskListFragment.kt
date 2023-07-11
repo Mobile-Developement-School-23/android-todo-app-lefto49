@@ -62,7 +62,6 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
 
         refresh.setOnRefreshListener {
             viewModel.uploadData()
-            refresh.isRefreshing = false
         }
 
         addTask.setOnClickListener {
@@ -90,6 +89,7 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
     private fun setDataUpdates() {
         lifecycleScope.launch {
             viewModel.getTasks().flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect {
+                refresh.isRefreshing = false
                 var newTasks = it
                 if (invisible.visibility == View.GONE) {
                     newTasks = it.filter { item -> !item.isDone }

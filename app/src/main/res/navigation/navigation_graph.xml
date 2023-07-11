@@ -7,13 +7,21 @@
     <fragment
         android:id="@+id/taskListFragment"
         android:name="com.todoapplication.view.fragments.TaskListFragment"
-        android:label="TaskListFragment" >
+        android:label="TaskListFragment">
         <action
             android:id="@+id/action_taskListFragment_to_taskInfoFragment"
-            app:destination="@id/taskInfoFragment" />
+            app:destination="@id/taskInfoFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out" />
         <action
             android:id="@+id/action_taskListFragment_to_addTaskFragment"
-            app:destination="@id/addTaskFragment" />
+            app:destination="@id/addTaskFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out" />
     </fragment>
     <fragment
         android:id="@+id/addTaskFragment"
