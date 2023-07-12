@@ -10,7 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.todoapplication.R
 import com.todoapplication.view.activity.MainActivity
 
-class AnimatorConfig {
+class BottomSheetConfig {
     companion object {
         fun setBottomSheet(activity: MainActivity, importance: TextView, resources: Resources) {
             val bottomSheet = BottomSheetDialog(activity)
