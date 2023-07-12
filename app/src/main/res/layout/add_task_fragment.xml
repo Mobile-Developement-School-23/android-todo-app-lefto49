@@ -45,15 +45,16 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="@string/do_until"
-        app:layout_constraintStart_toStartOf="@+id/sp_importance"
-        app:layout_constraintTop_toBottomOf="@id/sp_importance" />
+        app:layout_constraintStart_toStartOf="@+id/tv_importance_choose"
+        app:layout_constraintTop_toBottomOf="@id/tv_importance_choose" />
 
-    <androidx.appcompat.widget.AppCompatSpinner
-        android:id="@+id/sp_importance"
+    <TextView
+        android:id="@+id/tv_importance_choose"
         style="@style/body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:text="@string/no"
         app:layout_constraintStart_toStartOf="@id/tv_importance"
         app:layout_constraintTop_toBottomOf="@id/tv_importance" />
 

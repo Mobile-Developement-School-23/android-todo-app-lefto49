@@ -7,10 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.Lifecycle
@@ -38,7 +36,7 @@ class TaskInfoFragment : Fragment() {
     private lateinit var cancelButton: ImageView
     private lateinit var deleteButton: TextView
     private lateinit var taskText: EditText
-    private lateinit var importance: Spinner
+    private lateinit var importance: TextView
     private lateinit var isDeadline: SwitchCompat
     private lateinit var deadline: TextView
     private val calendar = Calendar.getInstance()
@@ -70,8 +68,13 @@ class TaskInfoFragment : Fragment() {
         isDeadline.setOnClickListener {
             deadlineSwitchListener()
         }
+
         deadline.setOnClickListener {
             deadlineClick()
+        }
+
+        importance.setOnClickListener {
+            AnimatorConfig.setBottomSheet(activity as MainActivity, importance, resources)
         }
 
         saveButton.setOnClickListener {
@@ -96,25 +99,17 @@ class TaskInfoFragment : Fragment() {
         cancelButton = view.findViewById(R.id.iv_cancel)
         deleteButton = view.findViewById(R.id.tv_delete)
         taskText = view.findViewById(R.id.et_task_text)
-        importance = view.findViewById(R.id.sp_importance)
+        importance = view.findViewById(R.id.tv_importance_choose)
         isDeadline = view.findViewById(R.id.sw_deadline)
         deadline = view.findViewById(R.id.tv_date)
 
         task = TodoItem("", "", Importance.basic, Date(), false, Date(), Date())
-
-        val spinnerAdapter = ArrayAdapter(
-            activity as MainActivity,
-            android.R.layout.simple_spinner_item,
-            listOf("Нет", "Низкая", "Высокая")
-        )
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        importance.adapter = spinnerAdapter
-        importance.setSelection(task.importance.value)
     }
 
     private fun updateData() {
         lifecycleScope.launch {
-            viewModel.getTaskById(taskId).flowWithLifecycle(viewLifecycleOwner.lifecycle,
+            viewModel.getTaskById(taskId).flowWithLifecycle(
+                viewLifecycleOwner.lifecycle,
                 Lifecycle.State.STARTED
             ).collect {
                 task = it
@@ -129,7 +124,11 @@ class TaskInfoFragment : Fragment() {
                     deadline.visibility = View.INVISIBLE
                 }
 
-                importance.setSelection(task.importance.value)
+                importance.text = when (task.importance) {
+                    Importance.low -> resources.getString(R.string.low)
+                    Importance.important -> resources.getString(R.string.high)
+                    else -> resources.getString(R.string.no)
+                }
             }
         }
     }
@@ -139,7 +138,9 @@ class TaskInfoFragment : Fragment() {
             if (deadline.text.toString().isEmpty()) {
                 val dialog = DatePickerDialog(
                     activity as MainActivity,
-                    { _, year, month, day -> deadline.text = String.format("%02d.%02d.%d", day, month + 1, year) },
+                    { _, year, month, day ->
+                        deadline.text = String.format("%02d.%02d.%d", day, month + 1, year)
+                    },
                     calendar.get(Calendar.DAY_OF_MONTH),
                     calendar.get(Calendar.MONTH) + 1,
                     calendar.get(Calendar.YEAR)
@@ -165,11 +166,12 @@ class TaskInfoFragment : Fragment() {
             task.deadline = null
         }
 
-        task.importance = listOf(
-            Importance.basic,
-            Importance.low,
-            Importance.important
-        )[importance.selectedItemPosition]
+        task.importance = when (importance.text.toString()) {
+            resources.getString(R.string.low) -> Importance.low
+            resources.getString(R.string.high) -> Importance.important
+            else -> Importance.basic
+        }
+
         task.editedAt = Date()
         viewModel.updateTask(task)
         findNavController().navigateUp()

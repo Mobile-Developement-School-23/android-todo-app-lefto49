@@ -31,7 +31,7 @@ class AddTaskFragment : Fragment() {
     private lateinit var cancelButton: ImageView
     private lateinit var deleteButton: TextView
     private lateinit var taskText: EditText
-    private lateinit var importance: Spinner
+    private lateinit var importance: TextView
     private lateinit var isDeadline: SwitchCompat
     private lateinit var deadline: TextView
     private lateinit var deleteIcon: ImageView
@@ -61,10 +61,15 @@ class AddTaskFragment : Fragment() {
 
         isDeadline.setOnClickListener {
             switchListener()
+            resources
         }
 
         deadline.setOnClickListener {
             deadlineListener()
+        }
+
+        importance.setOnClickListener {
+            AnimatorConfig.setBottomSheet(activity as MainActivity, importance, resources)
         }
 
         saveButton.setOnClickListener {
@@ -85,19 +90,13 @@ class AddTaskFragment : Fragment() {
         cancelButton = view.findViewById(R.id.iv_cancel)
         deleteButton = view.findViewById(R.id.tv_delete)
         taskText = view.findViewById(R.id.et_task_text)
-        importance = view.findViewById(R.id.sp_importance)
+        importance = view.findViewById(R.id.tv_importance_choose)
         isDeadline = view.findViewById(R.id.sw_deadline)
         deadline = view.findViewById(R.id.tv_date)
         deleteIcon = view.findViewById(R.id.iv_delete)
 
         deleteButton.visibility = View.GONE
         deleteIcon.visibility = View.GONE
-
-        val spinnerAdapter = ArrayAdapter(activity as MainActivity, android.R.layout.simple_spinner_item,
-            listOf("Нет", "Низкая", "Высокая")
-        )
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        importance.adapter = spinnerAdapter
     }
 
     private fun switchListener() {
@@ -126,14 +125,17 @@ class AddTaskFragment : Fragment() {
 
     private fun saveButtonListener() {
         val createdAt = Date()
+
+        val importance = when (importance.text.toString()) {
+            resources.getString(R.string.low) -> Importance.low
+            resources.getString(R.string.high) -> Importance.important
+            else -> Importance.basic
+        }
+
         val task = TodoItem(
             UUID.randomUUID().toString(),
             taskText.text.toString(),
-            listOf(
-                Importance.basic,
-                Importance.low,
-                Importance.important
-            )[importance.selectedItemPosition],
+            importance,
             null, false, createdAt, createdAt
         )
 
