@@ -15,6 +15,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
@@ -22,10 +25,14 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.todoapplication.data.entity.Importance
@@ -35,6 +42,7 @@ import com.todoapplication.data.entity.TodoItem
 import com.todoapplication.view.activity.MainActivity
 import com.todoapplication.view.model.TaskViewModel
 import com.todoapplication.view.model.ViewModelFactory
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -43,18 +51,14 @@ import javax.inject.Inject
  * A fragment for adding the task.
  */
 class AddTaskFragment : Fragment() {
-    private lateinit var saveButton: TextView
-    private lateinit var cancelButton: ImageView
-    private lateinit var deleteButton: TextView
-    private lateinit var taskText: EditText
-    private lateinit var importance: TextView
-    private lateinit var isDeadline: SwitchCompat
-    private lateinit var deadline: TextView
-    private lateinit var deleteIcon: ImageView
     private lateinit var navController: NavController
     private lateinit var task: TodoItem
-    private lateinit var editMode: Boolean
+
+    private var editMode = false
     private val calendar = Calendar.getInstance()
+    private lateinit var taskText: MutableState<String>
+    private lateinit var deadlineText: MutableState<String>
+    private lateinit var importanceText: MutableState<String>
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -73,118 +77,107 @@ class AddTaskFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.add_task_fragment, container, false)
-        task = TodoItem("", "task", Importance.basic, Date(), true, Date(), Date())
+        editMode = requireArguments().getBoolean("editMode")
+        task = TodoItem("", "", Importance.basic, null, false, Date(), Date())
         navController = findNavController()
         viewModel = ViewModelProvider(this, viewModelFactory)[TaskViewModel::class.java]
-/*
-        setView(view)
 
-        isDeadline.setOnClickListener {
-            switchListener()
-            resources
-        }
-
-        deadline.setOnClickListener {
-            deadlineListener()
-        }
-
-        importance.setOnClickListener {
-            BottomSheetConfig.setBottomSheet(activity as MainActivity, importance, resources)
-        }
-
-        saveButton.setOnClickListener {
-            saveButtonListener()
-        }
-
-        cancelButton.setOnClickListener {
-            navController.navigateUp()
-        }
-        return view*/
-        return ComposeView(requireContext()).apply {
+        val view = ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
+                taskText = remember { mutableStateOf("") }
+                deadlineText = remember { mutableStateOf("") }
+                importanceText = remember { mutableStateOf("") }
+
+                if (editMode) {
+                    setDataUpload()
+                }
+
                 setLayout()
             }
         }
+
+        return view
     }
 
-    private fun setView(view: View) {
-        navController = findNavController()
-        viewModel = ViewModelProvider(this, viewModelFactory)[TaskViewModel::class.java]
+    private fun setDataUpload() {
+        val taskId = requireArguments().getString("taskId")!!
 
-        saveButton = view.findViewById(R.id.tv_save)
-        cancelButton = view.findViewById(R.id.iv_cancel)
-        deleteButton = view.findViewById(R.id.tv_delete)
-        taskText = view.findViewById(R.id.et_task_text)
-        importance = view.findViewById(R.id.tv_importance_choose)
-        isDeadline = view.findViewById(R.id.sw_deadline)
-        deadline = view.findViewById(R.id.tv_date)
-        deleteIcon = view.findViewById(R.id.iv_delete)
+        lifecycleScope.launch {
+            viewModel.getTaskById(taskId).flowWithLifecycle(
+                viewLifecycleOwner.lifecycle,
+                Lifecycle.State.STARTED
+            ).collect {
+                task = it
+                taskText.value = it.task
 
-        deleteButton.visibility = View.GONE
-        deleteIcon.visibility = View.GONE
-    }
-
-    private fun switchListener() {
-        if (isDeadline.isChecked) {
-            if (deadline.text.toString().isEmpty()) {
-                val dialog = DatePickerDialog(
-                    activity as MainActivity,
-                    { _, year, month, day ->
-                        deadline.text = String.format("%02d.%02d.%d", day, month + 1, year)
-                    },
-                    calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1,
-                    calendar.get(Calendar.YEAR)
-                )
-                dialog.show()
-                dialog.setOnCancelListener {
-                    isDeadline.isChecked = false
+                if (it.deadline != null) {
+                    deadlineText.value = formatter.format(it.deadline)
                 }
+                importanceText.value = setImportance(it.importance)
             }
-            deadline.visibility = View.VISIBLE
-            deadline.isClickable = true
-        } else {
-            deadline.visibility = View.GONE
-            deadline.isClickable = false
         }
     }
 
-    private fun saveButtonListener() {
-        val createdAt = Date()
-
-        val importance = when (importance.text.toString()) {
-            resources.getString(R.string.low) -> Importance.low
-            resources.getString(R.string.high) -> Importance.important
-            else -> Importance.basic
+    private fun saveTask() {
+        if (editMode) {
+            task.editedAt = Date()
+            task.task = taskText.value
+            viewModel.updateTask(task)
+        } else {
+            val createdAt = Date()
+            task.createdAt = createdAt
+            task.editedAt = createdAt
+            task.id = UUID.randomUUID().toString()
+            task.task = taskText.value
+            viewModel.addTask(task)
         }
-
-        val task = TodoItem(
-            UUID.randomUUID().toString(),
-            taskText.text.toString(),
-            importance,
-            null, false, createdAt, createdAt
-        )
-
-        if (isDeadline.isChecked) {
-            task.deadline = formatter.parse(deadline.text.toString())
-        }
-
-        viewModel.addTask(task)
         navController.navigateUp()
     }
 
-    private fun deadlineListener() {
+    private fun setImportance(importance: Importance): String = when (importance) {
+        Importance.low -> resources.getString(R.string.low)
+        Importance.important -> resources.getString(R.string.high)
+        else -> resources.getString(R.string.no)
+    }
+
+    private fun chooseDeadline(checked: Boolean) {
+        if (checked) {
+            val dialog = DatePickerDialog(
+                activity as MainActivity,
+                { _, _, _, _ ->
+                    task.deadline = calendar.time
+                    deadlineText.value = formatter.format(task.deadline)
+                },
+                calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.YEAR)
+            )
+            dialog.show()
+        } else {
+            task.deadline = null
+            deadlineText.value = ""
+        }
+    }
+
+    private fun changeDeadline() {
         val dialog = DatePickerDialog(
             activity as MainActivity,
-            { _, year, month, day ->
-                deadline.text = String.format("%02d.%02d.%d", day, month + 1, year)
+            { _, _, _, _ ->
+                task.deadline = calendar.time
+                deadlineText.value = formatter.format(task.deadline)
             },
-            calendar.get(Calendar.DAY_OF_MONTH),
-            calendar.get(Calendar.MONTH) + 1,
+            calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1,
             calendar.get(Calendar.YEAR)
         )
         dialog.show()
+    }
+
+    private fun setDate(date: Date?): String {
+        if (date == null) {
+            return ""
+        }
+
+        return formatter.format(date)
     }
 
     @Preview
@@ -203,10 +196,11 @@ class AddTaskFragment : Fragment() {
                     Icon(Icons.Default.Close, null)
                 }
                 Spacer(Modifier.weight(1f))
-                Text(
-                    text = resources.getString(R.string.save).uppercase(),
-                    style = textButton
-                )
+                TextButton(
+                    onClick = { saveTask() }
+                ) {
+                    Text(resources.getString(R.string.save).uppercase(), style = textButton)
+                }
             }
 
             Column(
@@ -216,8 +210,8 @@ class AddTaskFragment : Fragment() {
                 )
             ) {
                 TextField(
-                    value = task.task,
-                    onValueChange = { task.task = it },
+                    value = taskText.value,
+                    onValueChange = { taskText.value = it },
                     textStyle = textBody,
                     placeholder = { Text(resources.getString(R.string.to_do)) },
                     modifier = Modifier.fillMaxWidth(),
@@ -225,23 +219,32 @@ class AddTaskFragment : Fragment() {
                     minLines = 6
                 )
                 Spacer(modifier = Modifier.padding(vertical = 16.dp))
+
                 Text(
                     text = resources.getString(R.string.importance),
                     style = textBody
                 )
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
-                Text("High", style = textBody)
+
+                TextButton(onClick = { TODO() }) {
+                    Text(importanceText.value, style = textBody)
+                }
+
                 Row(modifier = Modifier.padding(vertical = 32.dp)) {
                     Column {
                         Text(resources.getString(R.string.do_until), style = textBody)
-                        Text("Date", style = textBody)
+
+                        TextButton(onClick = { changeDeadline() }) {
+                            Text(setDate(task.deadline), style = textBody)
+                        }
                     }
                     Spacer(Modifier.weight(1f))
-                    Switch(checked = task.deadline != null, onCheckedChange = {
-                        //TODO()
+                    Switch(checked = deadlineText.value != "", onCheckedChange = {
+                        chooseDeadline(it)
                     })
                 }
-                if (false) {
+
+                if (editMode) {
                     Row(modifier = Modifier.padding(vertical = 32.dp)) {
                         Row(modifier = Modifier.padding(vertical = 12.dp)) {
                             IconButton(
@@ -259,7 +262,8 @@ class AddTaskFragment : Fragment() {
                             }
                         }
                         TextButton(onClick = {
-                            //TODO()
+                            viewModel.deleteTask(task)
+                            navController.navigateUp()
                         }) {
                             Text(resources.getString(R.string.delete), style = textDelete)
                         }

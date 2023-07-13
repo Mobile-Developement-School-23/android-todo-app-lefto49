@@ -65,7 +65,9 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
         }
 
         addTask.setOnClickListener {
-            findNavController().navigate(R.id.action_taskListFragment_to_addTaskFragment)
+            val bundle = Bundle()
+            bundle.putBoolean("editMode", false)
+            findNavController().navigate(R.id.action_taskListFragment_to_addTaskFragment, bundle)
         }
         return view
     }
@@ -124,6 +126,7 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
     override fun onClick(taskId: String) {
         val bundle = Bundle()
         bundle.putString("taskId", taskId)
-        findNavController().navigate(R.id.action_taskListFragment_to_taskInfoFragment, bundle)
+        bundle.putBoolean("editMode", true)
+        findNavController().navigate(R.id.action_taskListFragment_to_addTaskFragment, bundle)
     }
 }
