@@ -9,6 +9,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.SwitchCompat
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -36,6 +55,7 @@ class AddTaskFragment : Fragment() {
     private lateinit var deadline: TextView
     private lateinit var deleteIcon: ImageView
     private lateinit var navController: NavController
+    private lateinit var task: TodoItem
     private val calendar = Calendar.getInstance()
 
     @Inject
@@ -56,7 +76,8 @@ class AddTaskFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.add_task_fragment, container, false)
-
+        task = TodoItem("", "task", Importance.basic, Date(), true, Date(), Date())
+/*
         setView(view)
 
         isDeadline.setOnClickListener {
@@ -79,7 +100,13 @@ class AddTaskFragment : Fragment() {
         cancelButton.setOnClickListener {
             navController.navigateUp()
         }
-        return view
+        return view*/
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                setLayout()
+            }
+        }
     }
 
     private fun setView(view: View) {
@@ -158,5 +185,64 @@ class AddTaskFragment : Fragment() {
             calendar.get(Calendar.YEAR)
         )
         dialog.show()
+    }
+
+    @Preview
+    @Composable
+    private fun setLayout() {
+        Scaffold(
+            topBar = {
+                TopAppBar {
+                    Row {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(Icons.Default.Close, null)
+                        }
+                        Text(
+                            text = resources.getString(R.string.save),
+                            style = TextStyle(
+                                color = Color.Companion.Blue,
+                                fontFamily = FontFamily.SansSerif,
+                                fontSize = 14.sp,
+                                lineHeight = 24.sp
+                            )
+                        )
+                    }
+                }
+            }) { padding ->
+            Column(
+                modifier = Modifier.padding(
+                    vertical = padding.calculateTopPadding(),
+                    horizontal = 10.dp
+                )
+            ) {
+                TextField(
+                    value = "",
+                    onValueChange = { task.task = it },
+                    placeholder = { Text(resources.getString(R.string.to_do)) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(resources.getString(R.string.importance))
+                Text("High")
+                Row {
+                    Column {
+                        Text(resources.getString(R.string.do_until))
+                        Text("Date")
+                    }
+                    Switch(checked = task.deadline != null, onCheckedChange = {
+                        //TODO()
+                    })
+                }
+                Row {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(Icons.Default.Delete, null)
+                    }
+                    TextButton(onClick = {
+                        //TODO()
+                    }) {
+                        Text(resources.getString(R.string.delete))
+                    }
+                }
+            }
+        }
     }
 }
