@@ -14,10 +14,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
@@ -42,6 +39,7 @@ import com.todoapplication.data.entity.TodoItem
 import com.todoapplication.view.activity.MainActivity
 import com.todoapplication.view.model.TaskViewModel
 import com.todoapplication.view.model.ViewModelFactory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -180,6 +178,17 @@ class AddTaskFragment : Fragment() {
         return formatter.format(date)
     }
 
+    private fun updateImportance(importance: String) {
+        importanceText.value = importance
+
+        task.importance = when (importance) {
+            resources.getString(R.string.low) -> Importance.low
+            resources.getString(R.string.high) -> Importance.important
+            else -> Importance.basic
+        }
+    }
+
+    @OptIn(ExperimentalMaterialApi::class)
     @Preview
     @Composable
     private fun setLayout() {
@@ -187,89 +196,115 @@ class AddTaskFragment : Fragment() {
         val textButton = TextStyle(fontSize = 14.sp, lineHeight = 24.sp, color = Color.Blue)
         val textDelete = TextStyle(fontSize = 16.sp, lineHeight = 20.sp, color = Color.Red)
 
-        Column(Modifier.padding(horizontal = 20.dp, vertical = 15.dp)) {
-            Row {
-                IconButton(
-                    onClick = { navController.navigateUp() },
-                    modifier = Modifier.size(24.dp)
-                ) {
-                    Icon(Icons.Default.Close, null)
-                }
-                Spacer(Modifier.weight(1f))
-                TextButton(
-                    onClick = { saveTask() }
-                ) {
-                    Text(resources.getString(R.string.save).uppercase(), style = textButton)
+        val modalSheetState =
+            rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden) 
+        val scope = rememberCoroutineScope()
+
+        val importances = listOf(
+            resources.getString(R.string.no),
+            resources.getString(R.string.low),
+            resources.getString(R.string.high)
+        )
+
+        ModalBottomSheetLayout(sheetState = modalSheetState, sheetContent = {
+            Column {
+                Text("Выберите важность", style = textBody)
+
+                importances.forEach {
+                    Row {
+                        RadioButton(
+                            selected = importanceText.value == it,
+                            onClick = { updateImportance(it) })
+                        Text(it, style = textBody)
+                    }
                 }
             }
-
-            Column(
-                modifier = Modifier.padding(
-                    vertical = 10.dp,
-                    horizontal = 0.dp
-                )
-            ) {
-                TextField(
-                    value = taskText.value,
-                    onValueChange = { taskText.value = it },
-                    textStyle = textBody,
-                    placeholder = { Text(resources.getString(R.string.to_do)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    readOnly = false,
-                    minLines = 6
-                )
-                Spacer(modifier = Modifier.padding(vertical = 16.dp))
-
-                Text(
-                    text = resources.getString(R.string.importance),
-                    style = textBody
-                )
-                Spacer(modifier = Modifier.padding(vertical = 8.dp))
-
-                TextButton(onClick = { TODO() }) {
-                    Text(importanceText.value, style = textBody)
-                }
-
-                Row(modifier = Modifier.padding(vertical = 32.dp)) {
-                    Column {
-                        Text(resources.getString(R.string.do_until), style = textBody)
-
-                        TextButton(onClick = { changeDeadline() }) {
-                            Text(setDate(task.deadline), style = textBody)
-                        }
+        }) {
+            Column(Modifier.padding(horizontal = 20.dp, vertical = 15.dp)) {
+                Row {
+                    IconButton(
+                        onClick = { navController.navigateUp() },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(Icons.Default.Close, null)
                     }
                     Spacer(Modifier.weight(1f))
-                    Switch(checked = deadlineText.value != "", onCheckedChange = {
-                        chooseDeadline(it)
-                    })
+                    TextButton(
+                        onClick = { saveTask() }
+                    ) {
+                        Text(resources.getString(R.string.save).uppercase(), style = textButton)
+                    }
                 }
 
-                if (editMode) {
+                Column(
+                    modifier = Modifier.padding(
+                        vertical = 10.dp,
+                        horizontal = 0.dp
+                    )
+                ) {
+                    TextField(
+                        value = taskText.value,
+                        onValueChange = { taskText.value = it },
+                        textStyle = textBody,
+                        placeholder = { Text(resources.getString(R.string.to_do)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        readOnly = false,
+                        minLines = 6
+                    )
+                    Spacer(modifier = Modifier.padding(vertical = 16.dp))
+
+                    Text(
+                        text = resources.getString(R.string.importance),
+                        style = textBody
+                    )
+                    Spacer(modifier = Modifier.padding(vertical = 8.dp))
+
+                    TextButton(onClick = { scope.launch { modalSheetState.show() } }) {
+                        Text(importanceText.value, style = textBody)
+                    }
+
                     Row(modifier = Modifier.padding(vertical = 32.dp)) {
-                        Row(modifier = Modifier.padding(vertical = 12.dp)) {
-                            IconButton(
-                                onClick = { navController.navigateUp() },
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .padding(vertical = 0.dp)
-                            ) {
-                                Icon(
-                                    Icons.Default.Delete,
-                                    null,
-                                    tint = Color.Red,
-                                    modifier = Modifier.padding(vertical = 0.dp)
-                                )
+                        Column {
+                            Text(resources.getString(R.string.do_until), style = textBody)
+
+                            TextButton(onClick = { changeDeadline() }) {
+                                Text(setDate(task.deadline), style = textBody)
                             }
                         }
-                        TextButton(onClick = {
-                            viewModel.deleteTask(task)
-                            navController.navigateUp()
-                        }) {
-                            Text(resources.getString(R.string.delete), style = textDelete)
+                        Spacer(Modifier.weight(1f))
+                        Switch(checked = deadlineText.value != "", onCheckedChange = {
+                            chooseDeadline(it)
+                        })
+                    }
+
+                    if (editMode) {
+                        Row(modifier = Modifier.padding(vertical = 32.dp)) {
+                            Row(modifier = Modifier.padding(vertical = 12.dp)) {
+                                IconButton(
+                                    onClick = { navController.navigateUp() },
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .padding(vertical = 0.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        null,
+                                        tint = Color.Red,
+                                        modifier = Modifier.padding(vertical = 0.dp)
+                                    )
+                                }
+                            }
+                            TextButton(onClick = {
+                                (activity as MainActivity).deleteTask(task)
+                                navController.navigateUp()
+                            }) {
+                                Text(resources.getString(R.string.delete), style = textDelete)
+                            }
                         }
                     }
                 }
             }
         }
+
     }
 }

@@ -3,8 +3,10 @@ package com.todoapplication.view.activity
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material.SnackbarDuration
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
@@ -26,6 +28,7 @@ import javax.inject.Inject
  */
 class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
+    private lateinit var rootLayout: LinearLayout
 
     @Inject
     lateinit var receiver: NetworkChangeReceiver
@@ -42,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
         setContentView(R.layout.activity_main)
         navController = Navigation.findNavController(this, R.id.f_main)
-        val rootLayout = findViewById<LinearLayout>(R.id.root)
+        rootLayout = findViewById<LinearLayout>(R.id.root)
 
         lifecycleScope.launch {
             viewModel.getSnackBar().flowWithLifecycle(lifecycle, Lifecycle.State.STARTED).collect {
@@ -61,5 +64,25 @@ class MainActivity : AppCompatActivity() {
     fun changeTaskDone(task: TodoItem, isDone: Boolean) {
         task.isDone = isDone
         viewModel.updateTask(task)
+    }
+
+    fun deleteTask(task: TodoItem) {
+        val snackBar = Snackbar.make(rootLayout, "Text", Snackbar.LENGTH_INDEFINITE)
+        snackBar.setAction("Отмена") {
+            snackBar.dismiss()
+        }
+        snackBar.show()
+        object : CountDownTimer(5000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                snackBar.setText("Удалить ${task.task} ${millisUntilFinished / 1000 + 1}")
+            }
+
+            override fun onFinish() {
+                if (snackBar.isShown) {
+                    viewModel.deleteTask(task)
+                    snackBar.dismiss()
+                }
+            }
+        }.start()
     }
 }
