@@ -9,10 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.widget.SwitchCompat
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -56,6 +53,7 @@ class AddTaskFragment : Fragment() {
     private lateinit var deleteIcon: ImageView
     private lateinit var navController: NavController
     private lateinit var task: TodoItem
+    private lateinit var editMode: Boolean
     private val calendar = Calendar.getInstance()
 
     @Inject
@@ -77,6 +75,8 @@ class AddTaskFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.add_task_fragment, container, false)
         task = TodoItem("", "task", Importance.basic, Date(), true, Date(), Date())
+        navController = findNavController()
+        viewModel = ViewModelProvider(this, viewModelFactory)[TaskViewModel::class.java]
 /*
         setView(view)
 
@@ -190,56 +190,79 @@ class AddTaskFragment : Fragment() {
     @Preview
     @Composable
     private fun setLayout() {
-        Scaffold(
-            topBar = {
-                TopAppBar {
-                    Row {
-                        IconButton(onClick = { navController.navigateUp() }) {
-                            Icon(Icons.Default.Close, null)
-                        }
-                        Text(
-                            text = resources.getString(R.string.save),
-                            style = TextStyle(
-                                color = Color.Companion.Blue,
-                                fontFamily = FontFamily.SansSerif,
-                                fontSize = 14.sp,
-                                lineHeight = 24.sp
-                            )
-                        )
-                    }
+        val textBody = TextStyle(fontSize = 16.sp, lineHeight = 20.sp, color = Color.Black)
+        val textButton = TextStyle(fontSize = 14.sp, lineHeight = 24.sp, color = Color.Blue)
+        val textDelete = TextStyle(fontSize = 16.sp, lineHeight = 20.sp, color = Color.Red)
+
+        Column(Modifier.padding(horizontal = 20.dp, vertical = 15.dp)) {
+            Row {
+                IconButton(
+                    onClick = { navController.navigateUp() },
+                    modifier = Modifier.size(24.dp)
+                ) {
+                    Icon(Icons.Default.Close, null)
                 }
-            }) { padding ->
+                Spacer(Modifier.weight(1f))
+                Text(
+                    text = resources.getString(R.string.save).uppercase(),
+                    style = textButton
+                )
+            }
+
             Column(
                 modifier = Modifier.padding(
-                    vertical = padding.calculateTopPadding(),
-                    horizontal = 10.dp
+                    vertical = 10.dp,
+                    horizontal = 0.dp
                 )
             ) {
                 TextField(
-                    value = "",
+                    value = task.task,
                     onValueChange = { task.task = it },
+                    textStyle = textBody,
                     placeholder = { Text(resources.getString(R.string.to_do)) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    readOnly = false,
+                    minLines = 6
                 )
-                Text(resources.getString(R.string.importance))
-                Text("High")
-                Row {
+                Spacer(modifier = Modifier.padding(vertical = 16.dp))
+                Text(
+                    text = resources.getString(R.string.importance),
+                    style = textBody
+                )
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
+                Text("High", style = textBody)
+                Row(modifier = Modifier.padding(vertical = 32.dp)) {
                     Column {
-                        Text(resources.getString(R.string.do_until))
-                        Text("Date")
+                        Text(resources.getString(R.string.do_until), style = textBody)
+                        Text("Date", style = textBody)
                     }
+                    Spacer(Modifier.weight(1f))
                     Switch(checked = task.deadline != null, onCheckedChange = {
                         //TODO()
                     })
                 }
-                Row {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.Default.Delete, null)
-                    }
-                    TextButton(onClick = {
-                        //TODO()
-                    }) {
-                        Text(resources.getString(R.string.delete))
+                if (false) {
+                    Row(modifier = Modifier.padding(vertical = 32.dp)) {
+                        Row(modifier = Modifier.padding(vertical = 12.dp)) {
+                            IconButton(
+                                onClick = { navController.navigateUp() },
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .padding(vertical = 0.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    null,
+                                    tint = Color.Red,
+                                    modifier = Modifier.padding(vertical = 0.dp)
+                                )
+                            }
+                        }
+                        TextButton(onClick = {
+                            //TODO()
+                        }) {
+                            Text(resources.getString(R.string.delete), style = textDelete)
+                        }
                     }
                 }
             }
