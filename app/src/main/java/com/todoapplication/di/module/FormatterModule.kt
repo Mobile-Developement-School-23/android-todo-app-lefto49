@@ -8,6 +8,6 @@ import java.text.SimpleDateFormat
 interface FormatterModule {
     companion object {
         @Provides
-        fun formatter() = SimpleDateFormat("dd.MM.yyyy")
+        fun formatter() = SimpleDateFormat("dd.MM.yyyy HH:mm")
     }
 }

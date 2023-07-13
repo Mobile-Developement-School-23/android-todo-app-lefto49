@@ -1,14 +1,16 @@
 package com.todoapplication.view.fragments
 
 import android.app.DatePickerDialog
+import android.app.NotificationManager
+import android.app.TimePickerDialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.widget.SwitchCompat
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -20,12 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
@@ -39,7 +39,6 @@ import com.todoapplication.data.entity.TodoItem
 import com.todoapplication.view.activity.MainActivity
 import com.todoapplication.view.model.TaskViewModel
 import com.todoapplication.view.model.ViewModelFactory
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -121,6 +120,11 @@ class AddTaskFragment : Fragment() {
         if (editMode) {
             task.editedAt = Date()
             task.task = taskText.value
+            (activity as MainActivity).removeNotification(task.id)
+
+            if (task.deadline != null) {
+                (activity as MainActivity).createNotification(task)
+            }
             viewModel.updateTask(task)
         } else {
             val createdAt = Date()
@@ -128,6 +132,10 @@ class AddTaskFragment : Fragment() {
             task.editedAt = createdAt
             task.id = UUID.randomUUID().toString()
             task.task = taskText.value
+
+            if (task.deadline != null) {
+                (activity as MainActivity).createNotification(task)
+            }
             viewModel.addTask(task)
         }
         navController.navigateUp()
@@ -141,32 +149,36 @@ class AddTaskFragment : Fragment() {
 
     private fun chooseDeadline(checked: Boolean) {
         if (checked) {
-            val dialog = DatePickerDialog(
-                activity as MainActivity,
-                { _, _, _, _ ->
-                    task.deadline = calendar.time
-                    deadlineText.value = formatter.format(task.deadline)
-                },
-                calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1,
-                calendar.get(Calendar.YEAR)
-            )
-            dialog.show()
+            showDialog()
         } else {
             task.deadline = null
             deadlineText.value = ""
         }
     }
 
-    private fun changeDeadline() {
+    private fun showDialog() {
         val dialog = DatePickerDialog(
             activity as MainActivity,
             { _, _, _, _ ->
-                task.deadline = calendar.time
-                deadlineText.value = formatter.format(task.deadline)
+                TimePickerDialog(
+                    activity,
+
+                    { _, hour, minute ->
+                        calendar.set(Calendar.HOUR_OF_DAY, hour)
+                        calendar.set(Calendar.MINUTE, minute)
+                        task.deadline = calendar.time
+                        deadlineText.value = formatter.format(task.deadline)
+                    },
+                    12,
+                    0,
+                    true
+                ).show()
             },
-            calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH) + 1,
-            calendar.get(Calendar.YEAR)
+            calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
         )
+
+        dialog.datePicker.minDate = calendar.timeInMillis
         dialog.show()
     }
 
@@ -267,7 +279,7 @@ class AddTaskFragment : Fragment() {
                         Column {
                             Text(resources.getString(R.string.do_until), style = textBody)
 
-                            TextButton(onClick = { changeDeadline() }) {
+                            TextButton(onClick = { showDialog() }) {
                                 Text(setDate(task.deadline), style = textBody)
                             }
                         }
