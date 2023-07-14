@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">TodoApplication</string>
+    <string name="my_tasks">Мои дела</string>
+    <string name="done">Выполнено –  </string>
+    <string name="importance">Важность</string>
+    <string name="do_until">Сделать до</string>
+    <string name="delete">Удалить</string>
+    <string name="save">Сохранить</string>
+    <string name="cancel">Отмена</string>
+    <string name="ready">Готово</string>
+    <string name="no">Нет</string>
+    <string name="low">Низкая</string>
+    <string name="high">!!Высокая</string>
+    <string name="to_do">Что надо сделать…</string>
+    <string name="choose_importance">Выберите важность: </string>
+</resources>
