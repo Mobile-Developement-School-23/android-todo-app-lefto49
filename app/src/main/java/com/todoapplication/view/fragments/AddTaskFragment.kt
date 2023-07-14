@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -36,6 +37,8 @@ import com.todoapplication.data.entity.Importance
 import com.todoapplication.R
 import com.todoapplication.TodoApp
 import com.todoapplication.data.entity.TodoItem
+import com.todoapplication.view.AppTheme
+import com.todoapplication.view.ExtendedTheme
 import com.todoapplication.view.activity.MainActivity
 import com.todoapplication.view.model.TaskViewModel
 import com.todoapplication.view.model.ViewModelFactory
@@ -90,7 +93,9 @@ class AddTaskFragment : Fragment() {
                     setDataUpload()
                 }
 
-                setLayout()
+                AppTheme {
+                    setLayout()
+                }
             }
         }
 
@@ -206,10 +211,9 @@ class AddTaskFragment : Fragment() {
     private fun setLayout() {
         val textBody = TextStyle(fontSize = 16.sp, lineHeight = 20.sp, color = Color.Black)
         val textButton = TextStyle(fontSize = 14.sp, lineHeight = 24.sp, color = Color.Blue)
-        val textDelete = TextStyle(fontSize = 16.sp, lineHeight = 20.sp, color = Color.Red)
 
         val modalSheetState =
-            rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden) 
+            rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
         val scope = rememberCoroutineScope()
 
         val importances = listOf(
@@ -218,20 +222,22 @@ class AddTaskFragment : Fragment() {
             resources.getString(R.string.high)
         )
 
-        ModalBottomSheetLayout(sheetState = modalSheetState, sheetContent = {
-            Column {
-                Text("Выберите важность", style = textBody)
+        ModalBottomSheetLayout(sheetState = modalSheetState,
+            modifier = Modifier.background(MaterialTheme.colors.primary),
+            sheetContent = {
+                Column {
+                    Text("Выберите важность", style = textBody)
 
-                importances.forEach {
-                    Row {
-                        RadioButton(
-                            selected = importanceText.value == it,
-                            onClick = { updateImportance(it) })
-                        Text(it, style = textBody)
+                    importances.forEach {
+                        Row {
+                            RadioButton(
+                                selected = importanceText.value == it,
+                                onClick = { updateImportance(it) })
+                            Text(it, style = textBody)
+                        }
                     }
                 }
-            }
-        }) {
+            }) {
             Column(Modifier.padding(horizontal = 20.dp, vertical = 15.dp)) {
                 Row {
                     IconButton(
@@ -259,7 +265,7 @@ class AddTaskFragment : Fragment() {
                         onValueChange = { taskText.value = it },
                         textStyle = textBody,
                         placeholder = { Text(resources.getString(R.string.to_do)) },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colors.secondary),
                         readOnly = false,
                         minLines = 6
                     )
@@ -290,33 +296,39 @@ class AddTaskFragment : Fragment() {
                     }
 
                     if (editMode) {
-                        Row(modifier = Modifier.padding(vertical = 32.dp)) {
-                            Row(modifier = Modifier.padding(vertical = 12.dp)) {
-                                IconButton(
-                                    onClick = { navController.navigateUp() },
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .padding(vertical = 0.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Default.Delete,
-                                        null,
-                                        tint = Color.Red,
-                                        modifier = Modifier.padding(vertical = 0.dp)
-                                    )
-                                }
-                            }
-                            TextButton(onClick = {
-                                (activity as MainActivity).deleteTask(task)
-                                navController.navigateUp()
-                            }) {
-                                Text(resources.getString(R.string.delete), style = textDelete)
-                            }
-                        }
+                        setDelete()
                     }
                 }
             }
         }
+    }
 
+    @Composable
+    private fun setDelete() {
+        val textDelete = TextStyle(fontSize = 16.sp, lineHeight = 20.sp, color = Color.Red)
+
+        Row(modifier = Modifier.padding(vertical = 32.dp)) {
+            Row(modifier = Modifier.padding(vertical = 12.dp)) {
+                IconButton(
+                    onClick = { navController.navigateUp() },
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(vertical = 0.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Delete,
+                        null,
+                        tint = ExtendedTheme.colors.red,
+                        modifier = Modifier.padding(vertical = 0.dp)
+                    )
+                }
+            }
+            TextButton(onClick = {
+                (activity as MainActivity).deleteTask(task)
+                navController.navigateUp()
+            }) {
+                Text(resources.getString(R.string.delete), style = textDelete)
+            }
+        }
     }
 }
