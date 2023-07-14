@@ -224,14 +224,14 @@ class AddTaskFragment : Fragment() {
             Column(Modifier.padding(horizontal = 20.dp, vertical = 15.dp)) {
                 UpperBar()
 
-                MainBlock()
-
                 Column(
                     modifier = Modifier.padding(
                         vertical = 10.dp,
                         horizontal = 0.dp
                     )
                 ) {
+                    MainBlock()
+
                     Spacer(modifier = Modifier.padding(vertical = 8.dp))
 
                     TextButton(onClick = { scope.launch { modalSheetState.show() } }) {
@@ -315,13 +315,13 @@ class AddTaskFragment : Fragment() {
                 Text(
                     resources.getString(R.string.do_until),
                     style = ExtendedTheme.typography.body,
-                    color = MaterialTheme.colors.onSecondary
+                    color = MaterialTheme.colors.onPrimary
                 )
 
                 TextButton(onClick = { showDialog() }) {
                     Text(
                         setDate(task.deadline), style = ExtendedTheme.typography.body,
-                        color = MaterialTheme.colors.onSecondary
+                        color = MaterialTheme.colors.onPrimary
                     )
                 }
             }
