@@ -18,13 +18,10 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
@@ -61,6 +58,7 @@ class AddTaskFragment : Fragment() {
 
     @Inject
     lateinit var repo: TodoItemsRepository
+
     @Inject
     lateinit var preferences: SharedPreferences
 
@@ -218,59 +216,15 @@ class AddTaskFragment : Fragment() {
             rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
         val scope = rememberCoroutineScope()
 
-        val importances = listOf(
-            resources.getString(R.string.no),
-            resources.getString(R.string.low),
-            resources.getString(R.string.high)
-        )
-
         ModalBottomSheetLayout(sheetState = modalSheetState,
             modifier = Modifier.background(MaterialTheme.colors.primary),
             sheetContent = {
-                Column {
-                    Text(
-                        "Выберите важность",
-                        style = ExtendedTheme.typography.body,
-                        color = MaterialTheme.colors.onPrimary
-                    )
-
-                    importances.forEach {
-                        Row {
-                            RadioButton(
-                                selected = importanceText.value == it,
-                                onClick = { updateImportance(it) })
-                            Text(
-                                it,
-                                style = ExtendedTheme.typography.body,
-                                color = MaterialTheme.colors.onPrimary
-                            )
-                        }
-                    }
-                }
+                SheetBlock()
             }) {
             Column(Modifier.padding(horizontal = 20.dp, vertical = 15.dp)) {
-                Row {
-                    IconButton(
-                        onClick = { navController.navigateUp() },
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Close,
-                            null,
-                            modifier = Modifier.background(MaterialTheme.colors.onPrimary)
-                        )
-                    }
-                    Spacer(Modifier.weight(1f))
-                    TextButton(
-                        onClick = { saveTask() }
-                    ) {
-                        Text(
-                            resources.getString(R.string.save).uppercase(),
-                            style = ExtendedTheme.typography.button,
-                            color = ExtendedTheme.colors.colorAccent
-                        )
-                    }
-                }
+                UpperBar()
+
+                MainBlock()
 
                 Column(
                     modifier = Modifier.padding(
@@ -278,25 +232,6 @@ class AddTaskFragment : Fragment() {
                         horizontal = 0.dp
                     )
                 ) {
-                    TextField(
-                        value = taskText.value,
-                        onValueChange = { taskText.value = it },
-                        textStyle = ExtendedTheme.typography.body,
-                        placeholder = { Text(resources.getString(R.string.to_do)) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colors.secondary),
-                        readOnly = false,
-                        minLines = 6,
-                        colors = TextFieldDefaults.textFieldColors(textColor = MaterialTheme.colors.onSecondary)
-                    )
-                    Spacer(modifier = Modifier.padding(vertical = 16.dp))
-
-                    Text(
-                        text = resources.getString(R.string.importance),
-                        style = ExtendedTheme.typography.body,
-                        color = MaterialTheme.colors.onPrimary
-                    )
                     Spacer(modifier = Modifier.padding(vertical = 8.dp))
 
                     TextButton(onClick = { scope.launch { modalSheetState.show() } }) {
@@ -306,32 +241,10 @@ class AddTaskFragment : Fragment() {
                         )
                     }
 
-                    Row(modifier = Modifier.padding(vertical = 32.dp)) {
-                        Column {
-                            Text(
-                                resources.getString(R.string.do_until),
-                                style = ExtendedTheme.typography.body,
-                                color = MaterialTheme.colors.onSecondary
-                            )
-
-                            TextButton(onClick = { showDialog() }) {
-                                Text(
-                                    setDate(task.deadline), style = ExtendedTheme.typography.body,
-                                    color = MaterialTheme.colors.onSecondary
-                                )
-                            }
-                        }
-                        Spacer(Modifier.weight(1f))
-                        Switch(
-                            checked = deadlineText.value != "",
-                            onCheckedChange = {
-                                chooseDeadline(it)
-                            },
-                        )
-                    }
+                    DeadlineBlock()
 
                     if (editMode) {
-                        setDelete()
+                        DeleteBlock()
                     }
                 }
             }
@@ -339,9 +252,7 @@ class AddTaskFragment : Fragment() {
     }
 
     @Composable
-    private fun setDelete() {
-        val textDelete = TextStyle(fontSize = 16.sp, lineHeight = 20.sp, color = Color.Red)
-
+    private fun DeleteBlock() {
         Row(modifier = Modifier.padding(vertical = 32.dp)) {
             Row(modifier = Modifier.padding(vertical = 12.dp)) {
                 IconButton(
@@ -369,5 +280,114 @@ class AddTaskFragment : Fragment() {
                 )
             }
         }
+    }
+
+    @Composable
+    private fun UpperBar() {
+        Row {
+            IconButton(
+                onClick = { navController.navigateUp() },
+                modifier = Modifier.size(24.dp)
+            ) {
+                Icon(
+                    Icons.Default.Close,
+                    null,
+                    tint = MaterialTheme.colors.onPrimary
+                )
+            }
+            Spacer(Modifier.weight(1f))
+            TextButton(
+                onClick = { saveTask() }
+            ) {
+                Text(
+                    resources.getString(R.string.save).uppercase(),
+                    style = ExtendedTheme.typography.button,
+                    color = ExtendedTheme.colors.colorAccent
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun DeadlineBlock() {
+        Row(modifier = Modifier.padding(vertical = 32.dp)) {
+            Column {
+                Text(
+                    resources.getString(R.string.do_until),
+                    style = ExtendedTheme.typography.body,
+                    color = MaterialTheme.colors.onSecondary
+                )
+
+                TextButton(onClick = { showDialog() }) {
+                    Text(
+                        setDate(task.deadline), style = ExtendedTheme.typography.body,
+                        color = MaterialTheme.colors.onSecondary
+                    )
+                }
+            }
+            Spacer(Modifier.weight(1f))
+            Switch(
+                checked = deadlineText.value != "",
+                onCheckedChange = {
+                    chooseDeadline(it)
+                },
+            )
+        }
+    }
+
+    @Composable
+    private fun SheetBlock() {
+        val importances = listOf(
+            resources.getString(R.string.no),
+            resources.getString(R.string.low),
+            resources.getString(R.string.high)
+        )
+
+        Column {
+            Text(
+                "Выберите важность",
+                style = ExtendedTheme.typography.body,
+                color = MaterialTheme.colors.onPrimary
+            )
+
+            importances.forEach {
+                Row {
+                    RadioButton(
+                        selected = importanceText.value == it,
+                        onClick = { updateImportance(it) })
+                    Text(
+                        it,
+                        style = ExtendedTheme.typography.body,
+                        color = MaterialTheme.colors.onPrimary
+                    )
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun MainBlock() {
+        TextField(
+            value = taskText.value,
+            onValueChange = { taskText.value = it },
+            textStyle = ExtendedTheme.typography.body,
+            placeholder = { Text(resources.getString(R.string.to_do)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colors.secondary),
+            readOnly = false,
+            minLines = 6,
+            colors = TextFieldDefaults.textFieldColors(
+                textColor = MaterialTheme.colors.onSecondary,
+                backgroundColor = MaterialTheme.colors.secondary
+            )
+        )
+        Spacer(modifier = Modifier.padding(vertical = 16.dp))
+
+        Text(
+            text = resources.getString(R.string.importance),
+            style = ExtendedTheme.typography.body,
+            color = MaterialTheme.colors.onPrimary
+        )
     }
 }
