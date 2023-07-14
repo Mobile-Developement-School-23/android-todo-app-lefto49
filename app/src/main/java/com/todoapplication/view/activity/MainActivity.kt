@@ -89,6 +89,11 @@ class MainActivity : AppCompatActivity() {
                 android.Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
+            Snackbar.make(
+                rootLayout,
+                "Отправка уведомлений запрещена. Измените настройки приложения",
+                Snackbar.LENGTH_SHORT
+            ).show()
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),

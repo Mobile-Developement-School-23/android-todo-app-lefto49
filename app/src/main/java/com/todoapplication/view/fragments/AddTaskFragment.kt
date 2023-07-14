@@ -232,8 +232,6 @@ class AddTaskFragment : Fragment() {
                 ) {
                     MainBlock()
 
-                    Spacer(modifier = Modifier.padding(vertical = 8.dp))
-
                     TextButton(onClick = { scope.launch { modalSheetState.show() } }) {
                         Text(
                             importanceText.value, style = ExtendedTheme.typography.body,

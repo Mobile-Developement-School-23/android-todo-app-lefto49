@@ -16,7 +16,5 @@ class NotificationResultReceiver : BroadcastReceiver() {
         val importance = intent.extras?.getString("importance") ?: return
         val taskName = intent.extras?.getString("taskName") ?: return
         val time = intent.extras?.getLong("time") ?: return
-
-
     }
 }
