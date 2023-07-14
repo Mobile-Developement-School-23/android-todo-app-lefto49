@@ -104,4 +104,8 @@ object ExtendedTheme {
     val colors: CustomColorsPalette
         @Composable
         get() = localColorsPalette.current
+
+    val typography: ExtendedTypography
+        @Composable
+        get() = customExtendedTypography.current
 }
