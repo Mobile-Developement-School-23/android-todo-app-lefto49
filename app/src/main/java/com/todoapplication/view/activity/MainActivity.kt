@@ -31,6 +31,7 @@ import com.todoapplication.R
 import com.todoapplication.TodoApp
 import com.todoapplication.data.entity.Importance
 import com.todoapplication.data.entity.TodoItem
+import com.todoapplication.data.repository.TodoItemsRepository
 import com.todoapplication.util.background.NetworkChangeReceiver
 import com.todoapplication.util.background.NotificationReceiver
 import com.todoapplication.view.model.TaskViewModel
@@ -53,11 +54,14 @@ class MainActivity : AppCompatActivity() {
     lateinit var prefs: SharedPreferences
 
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory
+    lateinit var repo: TodoItemsRepository
+
+    private lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: TaskViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (application as TodoApp).appComponent.activityComponent().inject(this)
+        viewModelFactory = ViewModelFactory(repo, prefs)
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this, viewModelFactory)[TaskViewModel::class.java]
         actionBar?.hide()

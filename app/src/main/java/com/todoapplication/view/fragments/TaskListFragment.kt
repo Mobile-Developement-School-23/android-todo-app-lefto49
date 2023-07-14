@@ -1,6 +1,7 @@
 package com.todoapplication.view.fragments
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,6 +20,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.todoapplication.R
 import com.todoapplication.TodoApp
+import com.todoapplication.data.repository.TodoItemsRepository
 import com.todoapplication.util.TaskAdapter
 import com.todoapplication.view.activity.MainActivity
 import com.todoapplication.view.model.TaskViewModel
@@ -41,7 +43,12 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
     private lateinit var themeSettings: ImageView
 
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory
+    lateinit var repo: TodoItemsRepository
+
+    @Inject
+    lateinit var preferences: SharedPreferences
+
+    private lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: TaskViewModel
 
     @Inject
@@ -78,6 +85,7 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
     }
 
     private fun setUpView(view: View) {
+        viewModelFactory = ViewModelFactory(repo, preferences)
         viewModel = ViewModelProvider(this, viewModelFactory)[TaskViewModel::class.java]
 
         tasksRecyclerView = view.findViewById(R.id.rv_tasks)
@@ -95,7 +103,8 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
 
     private fun setDataUpdates() {
         lifecycleScope.launch {
-            viewModel.getTasks().flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect {
+            viewModel.getTasks()
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect {
                 refresh.isRefreshing = false
                 var newTasks = it
                 if (invisible.visibility == View.GONE) {

@@ -3,6 +3,7 @@ package com.todoapplication.view.fragments
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -34,6 +35,7 @@ import com.todoapplication.data.entity.Importance
 import com.todoapplication.R
 import com.todoapplication.TodoApp
 import com.todoapplication.data.entity.TodoItem
+import com.todoapplication.data.repository.TodoItemsRepository
 import com.todoapplication.view.AppTheme
 import com.todoapplication.view.ExtendedTheme
 import com.todoapplication.view.activity.MainActivity
@@ -58,7 +60,11 @@ class AddTaskFragment : Fragment() {
     private lateinit var importanceText: MutableState<String>
 
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory
+    lateinit var repo: TodoItemsRepository
+    @Inject
+    lateinit var preferences: SharedPreferences
+
+    private lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: TaskViewModel
 
     @Inject
@@ -77,6 +83,8 @@ class AddTaskFragment : Fragment() {
         editMode = requireArguments().getBoolean("editMode")
         task = TodoItem("", "", Importance.basic, null, false, Date(), Date())
         navController = findNavController()
+
+        viewModelFactory = ViewModelFactory(repo, preferences)
         viewModel = ViewModelProvider(this, viewModelFactory)[TaskViewModel::class.java]
 
         val view = ComposeView(requireContext()).apply {
