@@ -1,0 +1,33 @@
+package com.todoapplication.view
+
+import androidx.compose.ui.graphics.Color
+
+val lightPrimary = Color(0xFFF5F6F2)
+val lightOnPrimary = Color(0xFF000000)
+val lightSecondary = Color(0xFFFFFFFF)
+val lightOnSecondary = Color(0xFF666666)
+val lightTertiary = Color(0xFFFFFFFF)
+val lightOnTertiary = Color(0xFFB3B3B3)
+val lightOutline = Color(0xffcccccc)
+val lightAccent = Color(0xFF007AFF)
+val lightBlueLight = Color(0xFF99CAFF)
+val lightGray = Color(0xFF8E8E93)
+val lightGrayLight = Color(0xFFD1D1D6)
+val lightGreen = Color(0xFF34C759)
+val lightRed = Color(0xFFFF3B30)
+val lightRedLight = Color(0xFFFF9D98)
+
+val darkPrimary = Color(0xFF161618)
+val darkOnPrimary = Color(0xFFFFFFFF)
+val darkSecondary = Color(0xFF252528)
+val darkOnSecondary = Color(0xFF999999)
+val darkTertiary = Color(0xFF3C3C3F)
+val darkOnTertiary = Color(0xFFB3B3B3)
+val darkOutline = Color(0x33FFFFFF)
+val darkAccent = Color(0xFF0A84FF)
+val darkBlueLight = Color(0xFF9DCEFF)
+val darkGray = Color(0xFF8E8E93)
+val darkGrayLight = Color(0xFF48484A)
+val darkGreen = Color(0xFF32D74B)
+val darkRed = Color(0xFFFF453A)
+val darkRedLight = Color(0xFFFFA29D)

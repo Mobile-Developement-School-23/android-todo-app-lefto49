@@ -84,7 +84,7 @@ class AddTaskFragment : Fragment() {
             setContent {
                 taskText = remember { mutableStateOf("") }
                 deadlineText = remember { mutableStateOf("") }
-                importanceText = remember { mutableStateOf("") }
+                importanceText = remember { mutableStateOf(resources.getString(R.string.no)) }
 
                 if (editMode) {
                     setDataUpload()

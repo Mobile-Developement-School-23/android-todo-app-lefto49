@@ -20,13 +20,25 @@ class NotificationReceiver : BroadcastReceiver() {
         val importance = intent.extras?.getString("importance") ?: return
         val taskName = intent.extras?.getString("taskName") ?: return
 
+        val postponeIntent = Intent(context, NotificationResultReceiver::class.java).apply {
+            putExtra("notId", notId)
+            putExtra("taskId", taskId)
+            putExtra("importance", importance)
+            putExtra("taskName", taskName)
+            putExtra("time", Date().time)
+        }
+
         val notification = NotificationCompat.Builder(context, "1")
             .setContentText("Наступил дедлайн дела $taskName.\nВажность дела: $importance")
             .setSmallIcon(R.mipmap.icon)
             .setContentTitle("TodoApplication")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
-
+            .addAction(
+                android.R.drawable.ic_lock_idle_alarm,
+                "Отложить",
+                PendingIntent.getBroadcast(context, Date().time.toInt(), postponeIntent, PendingIntent.FLAG_IMMUTABLE)
+            )
         val manager = NotificationManagerCompat.from(context)
         manager.notify(notId, notification.build())
     }

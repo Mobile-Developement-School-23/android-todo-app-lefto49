@@ -74,7 +74,7 @@ class TaskInfoFragment : Fragment() {
         }
 
         importance.setOnClickListener {
-            BottomSheetConfig.setBottomSheet(activity as MainActivity, importance, resources)
+            //BottomSheetConfig.setBottomSheet(activity as MainActivity, importance, resources)
         }
 
         saveButton.setOnClickListener {

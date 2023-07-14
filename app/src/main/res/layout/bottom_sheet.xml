@@ -12,7 +12,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="20dp"
-        android:text="@string/choose_importance"
+        android:text="Выберите тему: "
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,27 +26,27 @@
         app:layout_constraintTop_toBottomOf="@id/tv_choose">
 
         <RadioButton
-            android:id="@+id/rb_common"
+            android:id="@+id/rb_system"
             style="@style/body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat"
-            android:text="@string/no"/>
+            android:text="Как в системе"/>
 
         <RadioButton
-            android:id="@+id/rb_low"
+            android:id="@+id/rb_light"
             style="@style/body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat"
-            android:text="@string/low"/>
+            android:text="Светлая"/>
 
         <RadioButton
-            android:id="@+id/rb_high"
+            android:id="@+id/rb_dark"
             style="@style/body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat"
-            android:text="@string/high"/>
+            android:text="Тёмная"/>
     </RadioGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>

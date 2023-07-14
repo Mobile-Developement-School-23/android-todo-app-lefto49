@@ -38,6 +38,7 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
     private lateinit var visible: ImageView
     private lateinit var adapter: TaskAdapter
     private lateinit var refresh: SwipeRefreshLayout
+    private lateinit var themeSettings: ImageView
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -64,6 +65,10 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
             viewModel.uploadData()
         }
 
+        themeSettings.setOnClickListener {
+            val act = activity as MainActivity
+            BottomSheetConfig.setBottomSheet(act)
+        }
         addTask.setOnClickListener {
             val bundle = Bundle()
             bundle.putBoolean("editMode", false)
@@ -81,7 +86,7 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
         invisible = view.findViewById(R.id.iv_invisible)
         visible = view.findViewById(R.id.iv_visible)
         refresh = view.findViewById(R.id.swiperefresh)
-
+        themeSettings = view.findViewById(R.id.iv_theme)
         tasksRecyclerView.layoutManager = LinearLayoutManager(activity)
         adapter = TaskAdapter(listOf(), (activity as MainActivity), this, formatter)
 

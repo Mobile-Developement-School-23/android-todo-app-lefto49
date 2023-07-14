@@ -16,6 +16,7 @@ import android.os.CountDownTimer
 import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
@@ -73,6 +74,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        setTheme(prefs.getString("theme", "system")!!)
         registerReceiver(
             receiver,
             IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
@@ -167,5 +169,14 @@ class MainActivity : AppCompatActivity() {
             task.deadline!!.time,
             pendIntent
         )
+    }
+
+    fun setTheme(theme: String) {
+        prefs.edit().putString("theme", theme).apply()
+        when (theme) {
+            "dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            "light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        }
     }
 }

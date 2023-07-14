@@ -99,4 +99,14 @@
         app:layout_constraintBottom_toTopOf="@id/swiperefresh"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/invisible" />
+
+    <ImageView
+        android:id="@+id/iv_theme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_info_details" />
 </androidx.constraintlayout.widget.ConstraintLayout>

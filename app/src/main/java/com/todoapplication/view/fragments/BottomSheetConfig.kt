@@ -1,6 +1,7 @@
 package com.todoapplication.view.fragments
 
 import android.animation.ValueAnimator
+import android.content.SharedPreferences
 import android.content.res.Resources
 import android.view.animation.AccelerateInterpolator
 import android.widget.RadioButton
@@ -12,37 +13,38 @@ import com.todoapplication.view.activity.MainActivity
 
 class BottomSheetConfig {
     companion object {
-        fun setBottomSheet(activity: MainActivity, importance: TextView, resources: Resources) {
+        fun setBottomSheet(activity: MainActivity) {
             val bottomSheet = BottomSheetDialog(activity)
             bottomSheet.setContentView(R.layout.bottom_sheet)
-            val importantButton = bottomSheet.findViewById<RadioButton>(R.id.rb_high) ?: return
-            val lowButton = bottomSheet.findViewById<RadioButton>(R.id.rb_low) ?: return
-            val commonButton = bottomSheet.findViewById<RadioButton>(R.id.rb_common) ?: return
+            val darkButton = bottomSheet.findViewById<RadioButton>(R.id.rb_dark) ?: return
+            val lightButton = bottomSheet.findViewById<RadioButton>(R.id.rb_light) ?: return
+            val systemButton = bottomSheet.findViewById<RadioButton>(R.id.rb_system) ?: return
 
-            when (importance.text.toString()) {
-                resources.getString(R.string.low) -> lowButton.isChecked = true
-                resources.getString(R.string.high) -> importantButton.isChecked = true
-                else -> commonButton.isChecked = true
+            darkButton.setOnClickListener {
+                darkButton.isChecked = true
+                systemButton.isChecked = false
+                lightButton.isChecked = false
+
+                bottomSheet.dismiss()
+                activity.setTheme("dark")
             }
 
-            importantButton.setOnClickListener {
-                importance.setText(R.string.high)
-                commonButton.isChecked = false
-                lowButton.isChecked = false
+            lightButton.setOnClickListener {
+                systemButton.isChecked = false
+                darkButton.isChecked = false
+                lightButton.isChecked = true
 
-                setAnimation(importantButton, resources)
+                bottomSheet.dismiss()
+                activity.setTheme("light")
             }
 
-            lowButton.setOnClickListener {
-                importance.setText(R.string.low)
-                commonButton.isChecked = false
-                importantButton.isChecked = false
-            }
+            systemButton.setOnClickListener {
+                darkButton.isChecked = false
+                lightButton.isChecked = false
+                systemButton.isChecked = true
 
-            commonButton.setOnClickListener {
-                importance.setText(R.string.no)
-                importantButton.isChecked = false
-                lowButton.isChecked = false
+                bottomSheet.dismiss()
+                activity.setTheme("system")
             }
             bottomSheet.show()
         }
