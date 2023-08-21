@@ -96,6 +96,10 @@ class TodoItemsRepository @Inject constructor(
             return ResponseStatus.FAILED
         }
 
+        if (response.code() >= 500) {
+            db.todoDao().addTask(task)
+        }
+
         if (response.code() == 200 && response.body() != null) {
             val result = response.body()!!
             db.todoDao().addTask(JsonConverters.fromRemote(result.task))
@@ -126,6 +130,10 @@ class TodoItemsRepository @Inject constructor(
             return ResponseStatus.FAILED
         }
 
+        if (response.code() >= 500) {
+            db.todoDao().addTask(task)
+        }
+
         if (response.code() == 200 && response.body() != null) {
             val result = response.body()!!
             db.todoDao().deleteTask(JsonConverters.fromRemote(result.task))
@@ -152,6 +160,10 @@ class TodoItemsRepository @Inject constructor(
         if (response == null) {
             db.todoDao().addTask(task)
             return ResponseStatus.FAILED
+        }
+
+        if (response.code() >= 500) {
+            db.todoDao().addTask(task)
         }
 
         if (response.code() == 200 && response.body() != null) {

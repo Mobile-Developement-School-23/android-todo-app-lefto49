@@ -36,8 +36,8 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
     private lateinit var tasksRecyclerView: RecyclerView
     private lateinit var addTask: FloatingActionButton
     private lateinit var counterDone: TextView
-    private lateinit var invisible: ImageView
-    private lateinit var visible: ImageView
+/*    private lateinit var invisible: ImageView
+    private lateinit var visible: ImageView*/
     private lateinit var adapter: TaskAdapter
     private lateinit var refresh: SwipeRefreshLayout
     private lateinit var themeSettings: ImageView
@@ -66,7 +66,7 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
         val view = inflater.inflate(R.layout.task_list_fragment, container, false)
         setUpView(view)
         setDataUpdates()
-        setVisibilityListeners()
+        // ysetVisibilityListeners()
 
         refresh.setOnRefreshListener {
             viewModel.uploadData()
@@ -91,8 +91,8 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
         tasksRecyclerView = view.findViewById(R.id.rv_tasks)
         addTask = view.findViewById(R.id.fb_add_task)
         counterDone = view.findViewById(R.id.tv_done_counter)
-        invisible = view.findViewById(R.id.iv_invisible)
-        visible = view.findViewById(R.id.iv_visible)
+/*        invisible = view.findViewById(R.id.iv_invisible)
+        visible = view.findViewById(R.id.iv_visible)*/
         refresh = view.findViewById(R.id.swiperefresh)
         themeSettings = view.findViewById(R.id.iv_theme)
         tasksRecyclerView.layoutManager = LinearLayoutManager(activity)
@@ -105,19 +105,19 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
         lifecycleScope.launch {
             viewModel.getTasks()
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect {
-                refresh.isRefreshing = false
-                var newTasks = it
-                if (invisible.visibility == View.GONE) {
-                    newTasks = it.filter { item -> !item.isDone }
-                }
+                    refresh.isRefreshing = false
+                    var newTasks = it
+                    /*if (invisible.visibility == View.GONE) {
+                        newTasks = it.filter { item -> !item.isDone }
+                    }*/
 
-                adapter.updateData(newTasks)
-                counterDone.text = it.count { item -> item.isDone }.toString()
-            }
+                    adapter.updateData(newTasks)
+                    counterDone.text = it.count { item -> item.isDone }.toString()
+                }
         }
     }
 
-    private fun setVisibilityListeners() {
+/*    private fun setVisibilityListeners() {
         invisible.setOnClickListener {
             invisible.visibility = View.GONE
             invisible.isClickable = false
@@ -135,7 +135,7 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
             invisible.isClickable = true
             adapter.updateData(viewModel.getTasksList())
         }
-    }
+    }*/
 
     override fun onClick(taskId: String) {
         val bundle = Bundle()

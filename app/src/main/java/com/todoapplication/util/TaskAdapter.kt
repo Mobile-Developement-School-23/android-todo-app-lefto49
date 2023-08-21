@@ -62,18 +62,50 @@ class TaskAdapter(
 
             if (taskItem.deadline != null) {
                 deadlineText.text = formatter.format(taskItem.deadline)
-                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.red))
+                isDoneCheckbox.buttonTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.red))
+            } else {
+                deadlineText.text = ""
+                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        activity,
+                        R.color.colorOnSecondary
+                    )
+                )
             }
 
             if (taskItem.isDone) {
-                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.green))
                 isDoneCheckbox.isChecked = true
+
+                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        activity,
+                        R.color.green
+                    )
+                )
                 taskText.paintFlags = taskText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             }
         }
 
         private fun isDoneClickListener() {
             (activity as MainActivity).changeTaskDone(taskItem, isDoneCheckbox.isChecked)
+
+            if (taskItem.deadline != null) {
+                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        activity,
+                        R.color.red
+                    )
+                )
+            } else {
+                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        activity,
+                        R.color.colorOnSecondary
+                    )
+                )
+            }
+
             if (isDoneCheckbox.isChecked) {
                 isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
                     ContextCompat.getColor(
@@ -84,12 +116,6 @@ class TaskAdapter(
                 taskText.paintFlags = taskText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             } else {
                 taskText.paintFlags = taskText.paintFlags xor Paint.STRIKE_THRU_TEXT_FLAG
-                isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(
-                        activity,
-                        R.color.red
-                    )
-                )
             }
         }
     }
