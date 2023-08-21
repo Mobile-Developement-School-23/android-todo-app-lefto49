@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.Lifecycle
@@ -36,8 +37,7 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
     private lateinit var tasksRecyclerView: RecyclerView
     private lateinit var addTask: FloatingActionButton
     private lateinit var counterDone: TextView
-/*    private lateinit var invisible: ImageView
-    private lateinit var visible: ImageView*/
+    private lateinit var visibility: CheckBox
     private lateinit var adapter: TaskAdapter
     private lateinit var refresh: SwipeRefreshLayout
     private lateinit var themeSettings: ImageView
@@ -66,7 +66,14 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
         val view = inflater.inflate(R.layout.task_list_fragment, container, false)
         setUpView(view)
         setDataUpdates()
-        // ysetVisibilityListeners()
+
+        visibility.setOnClickListener {
+            if (visibility.isChecked) {
+                adapter.updateData(viewModel.getTasksList().filter { !(it.isDone) })
+            } else {
+                adapter.updateData(viewModel.getTasksList())
+            }
+        }
 
         refresh.setOnRefreshListener {
             viewModel.uploadData()
@@ -76,6 +83,7 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
             val act = activity as MainActivity
             BottomSheetConfig.setBottomSheet(act)
         }
+
         addTask.setOnClickListener {
             val bundle = Bundle()
             bundle.putBoolean("editMode", false)
@@ -91,8 +99,7 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
         tasksRecyclerView = view.findViewById(R.id.rv_tasks)
         addTask = view.findViewById(R.id.fb_add_task)
         counterDone = view.findViewById(R.id.tv_done_counter)
-/*        invisible = view.findViewById(R.id.iv_invisible)
-        visible = view.findViewById(R.id.iv_visible)*/
+        visibility = view.findViewById(R.id.cb_visibility)
         refresh = view.findViewById(R.id.swiperefresh)
         themeSettings = view.findViewById(R.id.iv_theme)
         tasksRecyclerView.layoutManager = LinearLayoutManager(activity)
@@ -107,35 +114,15 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect {
                     refresh.isRefreshing = false
                     var newTasks = it
-                    /*if (invisible.visibility == View.GONE) {
+                    if (!visibility.isChecked) {
                         newTasks = it.filter { item -> !item.isDone }
-                    }*/
+                    }
 
                     adapter.updateData(newTasks)
                     counterDone.text = it.count { item -> item.isDone }.toString()
                 }
         }
     }
-
-/*    private fun setVisibilityListeners() {
-        invisible.setOnClickListener {
-            invisible.visibility = View.GONE
-            invisible.isClickable = false
-
-            visible.visibility = View.VISIBLE
-            visible.isClickable = true
-            adapter.updateData(viewModel.getTasksList().filter { !(it.isDone) })
-        }
-
-        visible.setOnClickListener {
-            visible.visibility = View.GONE
-            visible.isClickable = false
-
-            invisible.visibility = View.VISIBLE
-            invisible.isClickable = true
-            adapter.updateData(viewModel.getTasksList())
-        }
-    }*/
 
     override fun onClick(taskId: String) {
         val bundle = Bundle()

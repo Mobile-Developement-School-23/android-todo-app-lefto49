@@ -22,8 +22,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:clickable="false"
+                android:gravity="center_vertical"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"/>
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
 
             <TextView
                 android:id="@+id/tv_done"
@@ -47,25 +48,29 @@
                 app:layout_constraintStart_toEndOf="@id/tv_done"
                 app:layout_constraintTop_toTopOf="@id/tv_done" />
 
-            <CheckBox
-                android:id="@+id/cb_visibility"
-                android:layout_width="52dp"
-                android:layout_height="39dp"
-                android:layout_gravity="end|bottom"
-                android:layout_marginEnd="5dp"
-                android:layout_marginBottom="3dp"
-                android:background="@drawable/eye_checkbox"
-                android:button="@null"
-                app:layout_collapseMode="pin"
-                app:srcCompat="@drawable/visible" />
-
-            <ImageView
-                android:id="@+id/iv_theme"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_gravity="bottom|end"
                 android:layout_marginEnd="10dp"
-                app:srcCompat="@android:drawable/ic_menu_info_details" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_collapseMode="pin">
+
+                <CheckBox
+                    android:id="@+id/cb_visibility"
+                    android:layout_width="52dp"
+                    android:layout_height="39dp"
+                    android:background="@drawable/eye_checkbox"
+                    android:button="@null"
+                    app:srcCompat="@drawable/visible" />
+
+                <ImageView
+                    android:id="@+id/iv_theme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@android:drawable/ic_menu_info_details" />
+            </LinearLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -91,14 +96,12 @@
         android:id="@+id/fb_add_task"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="40dp"
         android:backgroundTint="?attr/colorAccent"
         android:clickable="true"
         android:focusable="true"
-        android:visibility="gone"
-        app:layout_anchor="@id/rv_tasks"
-        app:layout_anchorGravity="end|bottom"
         app:rippleColor="@color/blue_light"
         app:srcCompat="@drawable/plus_sign" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
