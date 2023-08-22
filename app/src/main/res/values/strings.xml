@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">TodoApplication</string>
     <string name="my_tasks">Мои дела</string>
-    <string name="done">Выполнено –  </string>
+    <string name="done">Выполнено – %d </string>
     <string name="importance">Важность</string>
     <string name="do_until">Сделать до</string>
     <string name="delete">Удалить</string>

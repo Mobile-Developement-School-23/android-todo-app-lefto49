@@ -61,11 +61,12 @@ class TaskAdapter(
             }
 
             if (taskItem.deadline != null) {
+                deadlineText.visibility = View.VISIBLE
                 deadlineText.text = formatter.format(taskItem.deadline)
                 isDoneCheckbox.buttonTintList =
                     ColorStateList.valueOf(ContextCompat.getColor(activity, R.color.red))
             } else {
-                deadlineText.text = ""
+                deadlineText.visibility = View.INVISIBLE
                 isDoneCheckbox.buttonTintList = ColorStateList.valueOf(
                     ContextCompat.getColor(
                         activity,

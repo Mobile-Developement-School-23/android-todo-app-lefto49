@@ -6,13 +6,14 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="250dp"
             android:textColor="?attr/colorOnPrimary"
             app:expandedTitleGravity="bottom|start"
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
@@ -27,7 +28,7 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Dark" />
 
             <TextView
-                android:id="@+id/tv_done"
+                android:id="@+id/tv_done_counter"
                 style="@style/body"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -36,17 +37,6 @@
                 android:text="@string/done"
                 android:textColor="?attr/colorOnPrimary"
                 app:layout_collapseMode="parallax" />
-
-            <TextView
-                android:id="@+id/tv_done_counter"
-                style="@style/body"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="3dp"
-                android:text="@string/done"
-                android:textColor="?attr/colorOnPrimary"
-                app:layout_constraintStart_toEndOf="@id/tv_done"
-                app:layout_constraintTop_toTopOf="@id/tv_done" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -59,10 +49,11 @@
 
                 <CheckBox
                     android:id="@+id/cb_visibility"
-                    android:layout_width="52dp"
-                    android:layout_height="39dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
                     android:background="@drawable/eye_checkbox"
                     android:button="@null"
+                    android:checked="true"
                     app:srcCompat="@drawable/visible" />
 
                 <ImageView
@@ -74,23 +65,14 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swiperefresh"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_tasks"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:backgroundTint="?attr/colorAccent">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_tasks"
-            android:layout_width="match_parent"
-            android:layout_height="520dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="10dp"
-            android:background="?attr/colorSecondary"
-            android:textColor="?attr/colorOnSecondary"
-            tools:listitem="@layout/task_viewholder" />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        android:layout_height="match_parent"
+        android:background="?attr/colorSecondary"
+        android:textColor="?attr/colorOnSecondary"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/task_viewholder" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fb_add_task"

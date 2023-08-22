@@ -6,13 +6,12 @@
     android:background="?attr/selectableItemBackground">
 
     <CheckBox
-        style="@style/body"
         android:id="@+id/cb_task"
+        style="@style/body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -29,12 +28,13 @@
         style="@style/body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginBottom="3dp"
         android:ellipsize="end"
-        android:textColor="?attr/colorOnSecondary"
+        android:gravity="center_vertical"
         android:maxWidth="330dp"
-        android:gravity="top"
         android:maxLines="3"
+        android:textColor="?attr/colorOnSecondary"
+        app:layout_constraintBottom_toBottomOf="@id/cb_task"
         app:layout_constraintStart_toEndOf="@id/cb_task"
         app:layout_constraintTop_toTopOf="@id/cb_task" />
 
@@ -43,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="?attr/colorOnSecondary"
-        app:layout_constraintTop_toBottomOf="@id/tv_task"
-        app:layout_constraintStart_toStartOf="@id/tv_task" />
+        app:layout_constraintStart_toStartOf="@id/tv_task"
+        app:layout_constraintTop_toBottomOf="@id/tv_task" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

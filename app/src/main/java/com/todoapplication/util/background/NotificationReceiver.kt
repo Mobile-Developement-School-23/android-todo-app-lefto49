@@ -1,12 +1,19 @@
 package com.todoapplication.util.background
 
+import android.Manifest
 import android.app.PendingIntent
+import android.app.TaskStackBuilder
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.navigation.NavDeepLink
+import androidx.navigation.NavDeepLinkBuilder
 import com.todoapplication.R
+import com.todoapplication.view.activity.MainActivity
 import java.util.*
 
 class NotificationReceiver : BroadcastReceiver() {
@@ -28,6 +35,8 @@ class NotificationReceiver : BroadcastReceiver() {
             putExtra("time", Date().time)
         }
 
+        val openIntent = Intent(context, MainActivity::class.java)
+
         val notification = NotificationCompat.Builder(context, "1")
             .setContentText("Наступил дедлайн дела $taskName.\nВажность дела: $importance")
             .setSmallIcon(R.mipmap.icon)
@@ -37,9 +46,29 @@ class NotificationReceiver : BroadcastReceiver() {
             .addAction(
                 android.R.drawable.ic_lock_idle_alarm,
                 "Отложить",
-                PendingIntent.getBroadcast(context, Date().time.toInt(), postponeIntent, PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.getBroadcast(
+                    context,
+                    Date().time.toInt(),
+                    postponeIntent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
+            ).setContentIntent(
+                PendingIntent.getActivity(
+                    context,
+                    Date().time.toInt(),
+                    openIntent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
             )
+
         val manager = NotificationManagerCompat.from(context)
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
         manager.notify(notId, notification.build())
     }
 }
