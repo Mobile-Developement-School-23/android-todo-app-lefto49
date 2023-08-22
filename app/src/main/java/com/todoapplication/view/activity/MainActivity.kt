@@ -13,7 +13,10 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.Gravity
+import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -73,7 +76,14 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.getSnackBar().flowWithLifecycle(lifecycle, Lifecycle.State.STARTED).collect {
                 if (it != null) {
-                    Snackbar.make(rootLayout, it, Snackbar.LENGTH_LONG).show()
+                    Toast.makeText(this@MainActivity, it, Toast.LENGTH_LONG).show()
+/*                    val snackBar = Snackbar.make(rootLayout, it, Snackbar.LENGTH_LONG)
+
+                    val view = snackBar.view
+                    val params = view.layoutParams as FrameLayout.LayoutParams
+                    params.gravity = Gravity.TOP
+                    view.layoutParams = params
+                    snackBar.show()*/
                 }
             }
         }
@@ -114,10 +124,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun deleteTask(task: TodoItem) {
+        viewModel.deleteTask(task)
+
         val snackBar = Snackbar.make(rootLayout, "Text", Snackbar.LENGTH_INDEFINITE)
+
         snackBar.setAction("Отмена") {
             snackBar.dismiss()
+            viewModel.addTask(task)
         }
+
         snackBar.show()
         object : CountDownTimer(5000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -126,7 +141,6 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 if (snackBar.isShown) {
-                    viewModel.deleteTask(task)
                     snackBar.dismiss()
                     removeNotification(task.id)
                 }

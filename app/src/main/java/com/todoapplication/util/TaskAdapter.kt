@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.todoapplication.R
 import com.todoapplication.data.entity.Importance
@@ -118,6 +119,10 @@ class TaskAdapter(
             } else {
                 taskText.paintFlags = taskText.paintFlags xor Paint.STRIKE_THRU_TEXT_FLAG
             }
+        }
+
+        fun removeItem() {
+            (activity as MainActivity).deleteTask(taskItem)
         }
     }
 

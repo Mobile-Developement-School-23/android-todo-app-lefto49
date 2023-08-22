@@ -15,6 +15,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -22,6 +24,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.todoapplication.R
 import com.todoapplication.TodoApp
 import com.todoapplication.data.repository.TodoItemsRepository
+import com.todoapplication.util.SwipeHandler
 import com.todoapplication.util.TaskAdapter
 import com.todoapplication.view.activity.MainActivity
 import com.todoapplication.view.model.TaskViewModel
@@ -39,6 +42,7 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
     private lateinit var counterDone: TextView
     private lateinit var visibility: CheckBox
     private lateinit var adapter: TaskAdapter
+
     //private lateinit var refresh: SwipeRefreshLayout
     private lateinit var themeSettings: ImageView
 
@@ -80,9 +84,9 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
             }
         }
 
-/*        refresh.setOnRefreshListener {
-            viewModel.uploadData()
-        }*/
+        /*        refresh.setOnRefreshListener {
+                    viewModel.uploadData()
+                }*/
 
         themeSettings.setOnClickListener {
             val act = activity as MainActivity
@@ -104,12 +108,15 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
         addTask = view.findViewById(R.id.fb_add_task)
         counterDone = view.findViewById(R.id.tv_done_counter)
         visibility = view.findViewById(R.id.cb_visibility)
-       // refresh = view.findViewById(R.id.swiperefresh)
+        // refresh = view.findViewById(R.id.swiperefresh)
         themeSettings = view.findViewById(R.id.iv_theme)
         tasksRecyclerView.layoutManager = LinearLayoutManager(activity)
         adapter = TaskAdapter(listOf(), (activity as MainActivity), this, formatter)
 
         tasksRecyclerView.adapter = adapter
+
+        ItemTouchHelper(SwipeHandler()).attachToRecyclerView(tasksRecyclerView)
+        tasksRecyclerView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
     }
 
     private fun setDataUpdates() {
@@ -123,7 +130,8 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
                     }
 
                     adapter.updateData(newTasks)
-                    counterDone.text = resources.getString(R.string.done, it.count { item -> item.isDone })
+                    counterDone.text =
+                        resources.getString(R.string.done, it.count { item -> item.isDone })
                 }
         }
     }

@@ -22,7 +22,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.view.children
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
@@ -98,7 +97,7 @@ class AddTaskFragment : Fragment() {
                 }
 
                 AppTheme {
-                    setLayout()
+                    Layout()
                 }
             }
         }
@@ -209,9 +208,8 @@ class AddTaskFragment : Fragment() {
     }
 
     @OptIn(ExperimentalMaterialApi::class)
-    @Preview
     @Composable
-    private fun setLayout() {
+    private fun Layout() {
         val modalSheetState =
             rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
         val scope = rememberCoroutineScope()
@@ -387,5 +385,11 @@ class AddTaskFragment : Fragment() {
             style = ExtendedTheme.typography.body,
             color = MaterialTheme.colors.onPrimary
         )
+    }
+
+    @Preview
+    @Composable
+    private fun LayoutPreview() {
+        Layout()
     }
 }

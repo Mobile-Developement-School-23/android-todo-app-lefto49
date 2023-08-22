@@ -30,7 +30,7 @@ class TaskViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val result = repo.syncData()
             if (result != ResponseStatus.OK) {
-                snackbarText.emit("Ошибка синхронизации. Отображаются локальные данные")
+                snackbarText.emit("Ошибка синхронизации. Показ локальных данных ")
             }
         }
         allTasks = repo.getAll()
@@ -55,7 +55,7 @@ class TaskViewModel(
             if (result == ResponseStatus.UNSYNC && repo.syncData() == ResponseStatus.OK) {
                 updateTask(task)
             } else {
-                snackbarText.emit("Изменения сохранены локально. Проверьте соединение и попробуйте позднее")
+                snackbarText.emit("Изменено локально. Проверьте соединение ")
                 preferences.edit().putBoolean("local updates", true).apply()
             }
         }
@@ -72,7 +72,7 @@ class TaskViewModel(
             if (result == ResponseStatus.UNSYNC && repo.syncData() == ResponseStatus.OK) {
                 deleteTask(task)
             } else {
-                snackbarText.emit("Изменения сохранены локально. Проверьте соединение и попробуйте позднее")
+                snackbarText.emit("Удалено локально. Проверьте соединение ")
                 preferences.edit().putBoolean("local updates", true).apply()
             }
         }
@@ -89,7 +89,7 @@ class TaskViewModel(
             if (result == ResponseStatus.UNSYNC && repo.syncData() == ResponseStatus.OK) {
                 addTask(task)
             } else {
-                snackbarText.emit("Изменения сохранены локально. Проверьте соединение и попробуйте позднее")
+                snackbarText.emit("Добавлено локально. Проверьте соединение ")
                 preferences.edit().putBoolean("local updates", true).apply()
             }
         }
