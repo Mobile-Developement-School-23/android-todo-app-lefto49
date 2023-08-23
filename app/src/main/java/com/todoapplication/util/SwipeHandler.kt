@@ -1,13 +1,15 @@
 package com.todoapplication.util
 
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import androidx.compose.ui.res.colorResource
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.todoapplication.R
 
-class SwipeHandler : ItemTouchHelper.Callback() {
+class SwipeHandler(val context: Context) : ItemTouchHelper.Callback() {
     override fun getMovementFlags(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
@@ -29,7 +31,7 @@ class SwipeHandler : ItemTouchHelper.Callback() {
         (viewHolder as TaskAdapter.TaskViewHolder).removeItem()
     }
 
-    override fun isLongPressDragEnabled() : Boolean {
+    override fun isLongPressDragEnabled(): Boolean {
         return false
     }
 
@@ -48,16 +50,16 @@ class SwipeHandler : ItemTouchHelper.Callback() {
     ) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             val itemView = viewHolder.itemView
-            val itemHeight = itemView.bottom - itemView.top
 
             val background = ColorDrawable()
-            background.color = Color.parseColor("#ff2e2e")
+            background.color = context.getColor(R.color.delete_button)
             background.setBounds(
                 itemView.right + dX.toInt(),
                 itemView.top,
                 itemView.right,
                 itemView.bottom
             )
+
             background.draw(c)
         }
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)

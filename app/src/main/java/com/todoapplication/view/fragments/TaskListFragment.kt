@@ -43,7 +43,7 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
     private lateinit var visibility: CheckBox
     private lateinit var adapter: TaskAdapter
 
-    //private lateinit var refresh: SwipeRefreshLayout
+    private lateinit var refresh: SwipeRefreshLayout
     private lateinit var themeSettings: ImageView
 
     @Inject
@@ -84,9 +84,10 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
             }
         }
 
-        /*        refresh.setOnRefreshListener {
-                    viewModel.uploadData()
-                }*/
+        refresh.setOnRefreshListener {
+            refresh.isRefreshing = false
+            viewModel.uploadData()
+        }
 
         themeSettings.setOnClickListener {
             val act = activity as MainActivity
@@ -108,22 +109,27 @@ class TaskListFragment : Fragment(), TaskAdapter.OnTaskListener {
         addTask = view.findViewById(R.id.fb_add_task)
         counterDone = view.findViewById(R.id.tv_done_counter)
         visibility = view.findViewById(R.id.cb_visibility)
-        // refresh = view.findViewById(R.id.swiperefresh)
+        refresh = view.findViewById(R.id.swiperefresh)
         themeSettings = view.findViewById(R.id.iv_theme)
         tasksRecyclerView.layoutManager = LinearLayoutManager(activity)
         adapter = TaskAdapter(listOf(), (activity as MainActivity), this, formatter)
 
         tasksRecyclerView.adapter = adapter
 
-        ItemTouchHelper(SwipeHandler()).attachToRecyclerView(tasksRecyclerView)
-        tasksRecyclerView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        ItemTouchHelper(SwipeHandler(requireContext())).attachToRecyclerView(tasksRecyclerView)
+        tasksRecyclerView.addItemDecoration(
+            DividerItemDecoration(
+                context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
     }
 
     private fun setDataUpdates() {
         lifecycleScope.launch {
             viewModel.getTasks()
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED).collect {
-                    //refresh.isRefreshing = false
+                    refresh.isRefreshing = false
                     var newTasks = it
                     if (!visibility.isChecked) {
                         newTasks = it.filter { item -> !item.isDone }
